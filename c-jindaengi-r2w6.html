@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>진땡이코다리찜 고객 페이지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 한 장짜리 현장 파일 — 머리 띠(현장·담당) 아래 세 장(상담·견적·진행)을 탭으로 넘기고, 장마다 '질문하기'가 붙는다 */
+:root{
+  --bg:#F4F1EC; --paper:#FCFAF6; --ink:#24221F; --muted:#6B655D; --line:#DCD4C8;
+  --gold:#8A6633; --gold-soft:#EFE5D3; --done:#2E7356; --done-soft:#DDEDE4; --warn:#9A4A2E;
+  --band:#1E1D1B; --band-ink:#F3EEE6; --band-muted:#B5AEA3;
+  --f-display:"Noto Serif KR","Nanum Myeongjo",serif;
+  --f-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141311; --paper:#1D1B19; --ink:#ECE6DC; --muted:#A49D92; --line:#35312C;
+  --gold:#CBA766; --gold-soft:#2E2618; --done:#63C196; --done-soft:#17302A; --warn:#E39072;
+  --band:#0E0D0C; --band-ink:#F3EEE6; --band-muted:#A49D92; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141311; --paper:#1D1B19; --ink:#ECE6DC; --muted:#A49D92; --line:#35312C;
+  --gold:#CBA766; --gold-soft:#2E2618; --done:#63C196; --done-soft:#17302A; --warn:#E39072;
+  --band:#0E0D0C; --band-ink:#F3EEE6; --band-muted:#A49D92; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;word-break:keep-all}
+.band{background:var(--band);color:var(--band-ink)}
+.wrap{max-width:820px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.band .wrap{padding-block:28px 0;display:grid;gap:14px}
+.brand{font-size:12px;letter-spacing:.16em;color:var(--gold);font-weight:700}
+.band h1{font-family:var(--f-display);font-size:clamp(24px,5.5vw,34px);line-height:1.3;margin:0;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px;color:var(--band-muted)}
+.meta b{color:var(--band-ink);font-weight:500}
+.tabs{display:flex;gap:4px;margin-top:10px;overflow-x:auto}
+.tab{font:inherit;font-size:14px;background:none;border:0;color:var(--band-muted);padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--band-ink);border-bottom-color:var(--gold);font-weight:700}
+main.wrap{padding-block:24px 64px;display:grid;gap:18px}
+.sheet{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:22px 20px;display:grid;gap:18px;min-width:0}
+.sheet h2{font-family:var(--f-display);font-size:21px;margin:0}
+.sheet h3{font-size:14px;margin:0;color:var(--gold);letter-spacing:.04em}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.lead{margin:0;color:var(--ink)}
+.muted{color:var(--muted);font-size:13px;margin:0}
+ul.list{margin:0;padding-left:20px;display:grid;gap:4px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.box{display:grid;gap:8px;min-width:0}
+.ask{font:inherit;font-size:13px;font-weight:500;background:var(--gold-soft);color:var(--gold);border:1px solid transparent;border-radius:999px;padding:7px 14px;cursor:pointer;white-space:nowrap}
+.ask:hover{border-color:var(--gold)}
+.btn{font:inherit;font-size:14px;font-weight:500;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:4px;padding:9px 16px;cursor:pointer}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:var(--paper)}
+.btn.danger{color:var(--warn);border-color:var(--warn);background:transparent}
+.btn:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+table.ed{min-width:520px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:500}
+td.amt,th.amt{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbd{color:var(--muted);font-size:13px}
+.sum{display:grid;gap:4px;justify-items:end;font-variant-numeric:tabular-nums}
+.sum div{display:flex;gap:18px}
+.sum .total{font-family:var(--f-display);font-size:22px;color:var(--gold)}
+.pill{display:inline-block;font-size:12px;padding:2px 10px;border-radius:999px;background:var(--gold-soft);color:var(--gold)}
+.bar{height:10px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--done)}
+ol.rail{list-style:none;margin:0;padding:0;display:grid}
+ol.rail li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;padding:10px 0;border-top:1px solid var(--line);align-items:baseline}
+.dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:11px;color:var(--muted)}
+li.done .dot{background:var(--done);border-color:var(--done);color:var(--paper)}
+li.now .dot{border-color:var(--gold);color:var(--gold)}
+li.now .nm{font-weight:700}
+.when{font-size:12px;color:var(--done);white-space:nowrap}
+.memo{font-size:13px;color:var(--muted);grid-column:2/-1}
+.qa{background:var(--band);color:var(--band-ink);border-radius:4px;padding:20px;display:grid;gap:10px}
+.qa p{margin:0;color:var(--band-muted);font-size:14px}
+.qa b{color:var(--band-ink)}
+.qa .ask{background:var(--gold);color:var(--band);text-decoration:none;display:inline-block}
+.ownerbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;background:var(--gold-soft);border-radius:4px;padding:10px 14px;font-size:13px}
+.ownerbar .acts{display:flex;gap:8px;flex-wrap:wrap}
+label.f{display:grid;gap:4px;font-size:12px;color:var(--muted);min-width:0}
+input[type=text],input[type=date],input[type=number],textarea,select{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px;width:100%}
+textarea{min-height:90px;resize:vertical}
+.ed td{padding:6px 4px}
+.ed input{min-width:0}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px}
+.chk input{width:18px;height:18px;accent-color:var(--done)}
+.note{font-size:13px;color:var(--warn);margin:0}
+.want{border-top:1px solid var(--line);padding-top:18px;gap:14px}
+fieldset.wg{border:0;margin:0;padding:0;display:grid;gap:8px;min-width:0}
+fieldset.wg legend{font-size:13px;font-weight:700;padding:0;margin-bottom:6px}
+.wi{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(150px,42vw),1fr));gap:6px}
+.wi label{display:flex;gap:8px;align-items:center;font-size:14px;padding:9px 10px;border:1px solid var(--line);border-radius:4px;background:var(--bg);cursor:pointer}
+.wi label:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.wi input{width:18px;height:18px;accent-color:var(--gold);flex:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:inherit;font-size:14px;padding:8px 14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.wopt{display:grid;gap:12px;background:var(--gold-soft);border-radius:4px;padding:12px}
+.wq{display:grid;gap:6px}
+.wqt{font-size:13px;font-weight:700;color:var(--gold)}
+.wr{display:grid;gap:6px}
+.wr label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:4px;background:var(--paper);cursor:pointer}
+.wr label:has(input:checked){border-color:var(--gold)}
+.wr input{width:18px;height:18px;accent-color:var(--gold);flex:none;margin-top:3px}
+.wr span{display:grid;gap:2px;min-width:0}
+.wr small{font-size:12.5px;color:var(--muted);line-height:1.55}
+footer.wrap{padding-block:0 40px;font-size:12px;color:var(--muted)}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}.sheet{padding:18px 14px}}
+</style>
+
+</head>
+<body>
+<header class="band">
+  <div class="wrap">
+    <span class="brand">THE BUILD TOP · 고객 전용 페이지</span>
+    <h1 id="site-name"></h1>
+    <div class="meta" id="site-meta"></div>
+    <nav class="tabs" role="tablist" aria-label="페이지 구성">
+      <button class="tab" role="tab" id="t-consult" data-v="consult">상담 내용</button>
+      <button class="tab" role="tab" id="t-quote" data-v="quote">견적·제안</button>
+      <button class="tab" role="tab" id="t-progress" data-v="progress">진행 현황</button>
+      <button class="tab" role="tab" id="t-qa" data-v="qa">질문·답변</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="ownerbar" id="ownerbar" hidden></div>
+  <input type="file" id="load-file" accept=".html,text/html" hidden>
+  <section class="sheet" id="v-consult" data-sheet="상담 내용"></section>
+  <section class="sheet" id="v-quote" data-sheet="견적·제안" hidden></section>
+  <section class="sheet" id="v-progress" data-sheet="진행 현황" hidden></section>
+  <section class="sheet" id="v-qa" data-sheet="질문·답변" hidden></section>
+  <aside class="qa">
+    <b>궁금하신 점은 언제든 남겨 주세요</b>
+    <p>질문을 보내 주시면 확인 후 이 페이지 <b>질문·답변</b>에 답변을 올려 드리고, 필요하면 바로 연락드립니다.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="ask" href="https://docs.google.com/forms/d/e/1FAIpQLSeFBva7BrnZPXqTzGmTknB5DA8tcWp9pn7_9hsZ9KRGRwhqWw/viewform" target="_blank" rel="noopener">질문 보내기</a><button class="ask" type="button" id="copy-site" style="background:transparent;color:var(--band-ink);border-color:var(--band-muted)">현장 이름 복사</button></div>
+    <p id="copy-msg" role="status"></p>
+    <p>전화·문자 <b>010-5467-9349</b> (대표 김종현)</p>
+  </aside>
+</main>
+<footer class="wrap"><span id="updated"></span></footer>
+
+<!--STATE--><script type="application/json" id="state">{"site": {"name": "진땡이코다리찜", "type": "com", "area": "1층 홀 27평·주방 9평 / 2층 33평", "client": "", "consultDate": "", "start": "", "end": "", "slug": "c-jindaengi-r2w6"}, "consult": {"summary": "기존 매장의 바닥·천정·벽면을 모두 새로 하여, 다크 마감과 우드·스톤, 따뜻한 간접조명이 어우러진 품격 있는 코다리찜 전문점으로 꾸밉니다.", "scope": ["외부: 회색 스톤보드 외벽, 자동 슬라이딩 도어 풀글라스 파사드", "1층: 주방·카운터 전면 배치, 직원 출입 통로, 우물천정 스톤보드·간접조명", "계단: 원목 유지, 슬랫 파티션 이동, 수직 라인조명", "2층: 정면 가벽 철거 후 하나의 홀, 싱크대와 가림 가벽", "조명: 벽등·매입등·라인조명, 요리 사진 조명 액자", "주방: 설비·벽체·천정·전기 (집기·후드·덕트는 별도)"], "requests": [], "next": ["1층·2층 3D 모형 확정", "자재 선정", "공정별 견적 확정·계약", "공사 일정·오픈일 확정"], "decide": ["목표 오픈일", "간판·사인 시안", "조명 액자에 쓸 요리 사진"]}, "quote": {"status": "작성 중", "items": [{"g": "철거", "name": "1·2층 바닥·천정·벽 철거, 폐기물 반출", "amt": 0}, {"g": "외부", "name": "스톤보드 외벽, 풀글라스 파사드·자동문", "amt": 0}, {"g": "설비·전기", "name": "주방 설비, 전기 배선·조명 회로", "amt": 0}, {"g": "목공", "name": "천정·우물천정, 가벽, 카운터, 슬랫 파티션", "amt": 0}, {"g": "주방", "name": "주방 벽체·천정 마감, 방수·타일", "amt": 0}, {"g": "마감", "name": "벽·바닥 마감재, 스톤보드", "amt": 0}, {"g": "조명", "name": "벽등·매입등·라인조명, 조명 액자", "amt": 0}, {"g": "2층", "name": "가벽 철거, 싱크대 가림벽, 홀 마감", "amt": 0}], "vat": true, "note": "금액은 현장 실측과 자재 확정 후 공정별로 안내해 드립니다. 주방 집기, 후드, 덕트는 별도 진행으로 이 견적에서 제외됩니다."}, "progress": {"done": {}, "memo": {}}, "qa": [], "updated": ""}</script><!--/STATE-->
+
+<script>
+(function(){
+var BODY_SRC = document.body.innerHTML;
+var M1 = "<!--" + "STATE-->", M2 = "<!--/" + "STATE-->";
+var STEPS = {
+  res:["상담·방문 상담","현장 실측·상태 진단","디자인·자재 선정","견적 확정·계약","착공 준비 (신고·이웃 안내)","철거","설비·전기 배선","창호·단열 (확장 시)","목공","방수·타일","도장·필름","도배","바닥","가구·조명·도기 설치","입주 청소","준공 점검 (고객님 동행)","A/S 관리 (1년)"],
+  com:["상담·업종 분석","현장 실측·법규 확인","디자인·브랜딩","견적 확정·계약","철거·원상 정리","설비·전기·가스","소방·환기·덕트","목공·구조물","주방 방수·타일","도장·마감재","파사드·간판·조명","주방기기·가구 반입","청소·영업 준비 점검","준공 점검·인계","A/S 관리 (1년)"],
+  ext:["상담·누수 진단","공법 선정·견적","계약·일정 확정","안전 설비·자재 반입","기존 철거","바탕 정리·크랙 보수","방수층·지붕 시공","샷시·이음부 코킹","담수·살수 테스트","준공·보증 안내","A/S 관리"]
+};
+var TYPE_LABEL = {res:"주거 리모델링", com:"상업 공간", ext:"외부·방수"};
+var FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeFBva7BrnZPXqTzGmTknB5DA8tcWp9pn7_9hsZ9KRGRwhqWw/viewform";
+var FLOOR = ["강마루","원목마루","데코타일","장판","타일 바닥","매트 (층간소음·놀이방)","카펫 (타일카펫·롤카펫)"];
+var WANT = {
+  res:[["철거·기초",["전체 철거","부분 철거","발코니 확장","단열 보강"]],["설비·전기",["배관 교체","난방 배관","콘센트·스위치 추가","조명 회로 추가"]],["목공",["천장 평탄화","우물천장·간접조명","가벽·파티션","몰딩·걸레받이","중문","붙박이장"]],["욕실",["공용욕실 전체","안방욕실 전체","욕실 부분 교체(도기·수전)","욕실 천정·환풍기"]],["주방",["주방 가구 교체","상판 교체","주방 타일","후드·인덕션"]],["바닥",FLOOR],["벽지·도배",["전체 도배","부분 도배"]],["기타 마감",["필름(문·문틀)","도장(페인트)","조명 교체","현관 타일·신발장"]]],
+  com:[["외부",["외벽 마감","파사드·출입문","간판·사인"]],["설비·전기",["주방 설비","전기 용량 증설","가스 배관","소방·환기"]],["공간",["카운터","좌석·가벽","천정·우물천정","계단·단차"]],["바닥",["데코타일","타일 바닥","장판","카펫 (타일카펫·롤카펫)","매트 (층간소음·놀이방)"]],["벽지·마감",["전체 도배","부분 도배","벽 마감재 (스톤·패널)","주방 방수·타일","조명 연출","조명 액자·인테리어 소품"]]],
+  ext:[["지붕",["지붕 교체","지붕 방수"]],["옥상",["옥상 바닥 방수","옥상 벽 방수도장","배수구 정비"]],["외벽",["외벽 도장","크랙 보수","샷시 코킹"]],["진단",["누수 원인 진단"]]]
+};
+/* 세부 선택 — [질문, [[값, 설명], ...]] */
+var PAPER = [["벽지 종류",[["실크","종이 위에 PVC 코팅. 물걸레 청소가 되고 이음새가 거의 보이지 않아 오래 사는 집에 잘 맞습니다."],["합지","종이 벽지. 통기성이 좋고 부담이 적어 전월세·단기 거주에 알맞습니다. 이음새가 살짝 겹쳐 보입니다."],["디아망","LX Z:IN의 프리미엄 실크. 일반 실크보다 두껍고 엠보싱 입체감이 깊어 고급스러운 분위기를 냅니다."]]],["브랜드",[["신한벽지",""],["제일벽지",""],["대표 추천","공간과 예산에 맞춰 대표가 골라 드립니다."]]]];
+var OPTS = {
+  "장판": [["두께",[["1.8T","가장 얇은 기본형. 원룸·임대·창고방처럼 부담을 줄이고 싶은 곳에 씁니다. 쿠션감이 적고 무거운 가구 자국이 남기 쉽습니다."],["2.0T","가장 많이 쓰는 표준 두께. 일반 주거 공간에 무난하며 발 닿는 느낌과 내구성이 균형을 이룹니다."],["2.2T","같은 보급형 중 가장 도톰한 두께. 쿠션감이 조금 더 있고 찍힘·가구 자국에 상대적으로 강합니다. 층간소음 완화가 중요하면 4.5T 이상이나 매트를 함께 상담해 주세요."]]]],
+  "전체 도배": PAPER, "부분 도배": PAPER
+};
+var picksKey = "";
+var picks = {}, opts = {}, itype = "res", info = {where: "", area: "", when: ""};
+function loadPicks(){
+  picksKey = "tbt-picks:" + (state.site.slug || state.site.name || "site");
+  picks = {}; opts = {}; itype = "res"; info = {where: "", area: "", when: ""};
+  try { var v = JSON.parse(localStorage.getItem(picksKey) || "{}") || {}; picks = v.picks || {}; opts = v.opts || {}; if (WANT[v.itype]) itype = v.itype; if (v.info) info = v.info; } catch(e) {}
+}
+var wishNote = "";
+function savePicks(){ try { localStorage.setItem(picksKey, JSON.stringify({picks: picks, opts: opts, itype: itype, info: info})); } catch(e) {} }
+function isIntro(){ return state.kind === "intro"; }
+function curType(){ return isIntro() ? itype : (state.site.type || "res"); }
+function allowed(){ var a = {}; (WANT[curType()] || WANT.res).forEach(function(g){ g[1].forEach(function(x){ a[x] = 1; }); }); return a; }
+function optHTML(item, base){
+  var groups = OPTS[item]; if (!groups || !picks[item]) return "";
+  var sel = opts[item] || {};
+  return '<div class="wopt">' + groups.map(function(g, gi){
+    return '<div class="wq"><span class="wqt">' + esc(item) + ' · ' + esc(g[0]) + '</span><div class="wr">' + g[1].map(function(o, oi){
+      var id = base + "-" + gi + "-" + oi;
+      return '<label for="' + id + '"><input type="radio" id="' + id + '" name="' + base + "-" + gi + '" data-opt-item="' + esc(item) + '" data-opt-q="' + esc(g[0]) + '" value="' + esc(o[0]) + '"' + (sel[g[0]] === o[0] ? " checked" : "") + '><span><b>' + esc(o[0]) + '</b>' + (o[1] ? '<small>' + esc(o[1]) + '</small>' : '') + '</span></label>';
+    }).join("") + '</div></div>';
+  }).join("") + '</div>';
+}
+function wantHTML(){
+  var groups = WANT[curType()] || WANT.res, n = 0, ok = allowed();
+  var chosen = Object.keys(picks).filter(function(k){ return picks[k] && ok[k]; });
+  var introTop = isIntro() ? '<div class="wq"><span class="wqt">공간 종류</span><div class="chips">' + Object.keys(TYPE_LABEL).map(function(k){ return '<button class="chip" type="button" data-itype="' + k + '" aria-pressed="' + (k === itype) + '">' + TYPE_LABEL[k] + '</button>'; }).join("") + '</div></div>' +
+    '<div class="grid2"><label class="f">공사할 곳 (동네·건물 이름)<input type="text" id="i-where" data-info="where" value="' + esc(info.where) + '" placeholder="예: 화명동 ○○아파트"></label>' +
+    '<label class="f">면적<input type="text" id="i-area" data-info="area" value="' + esc(info.area) + '" placeholder="예: 32평"></label>' +
+    '<label class="f">희망 공사 시기<select id="i-when" data-info="when">' + ["","1개월 이내","1~3개월 이내","3개월 이후","아직 미정"].map(function(x){ return '<option value="' + x + '"' + (x === info.when ? " selected" : "") + '>' + (x || "선택해 주세요") + '</option>'; }).join("") + '</select></label></div>' : "";
+  return '<div class="box want" id="want"><div class="head"><h3>원하시는 공사 고르기</h3><span class="muted">' + chosen.length + '개 선택</span></div>' +
+    '<p class="muted">하고 싶은 공사를 모두 골라 보내 주시면, 실측과 견적에 그대로 반영해 드립니다. 장판과 도배는 고르시면 두께·벽지 종류를 정하는 칸이 열립니다.</p>' + introTop +
+    groups.map(function(g){
+      var opens = "";
+      var boxes = g[1].map(function(x){
+        n++; var id = "w-" + n;
+        opens += optHTML(x, "o" + n);
+        return '<label for="' + id + '"><input type="checkbox" id="' + id + '" data-want="' + esc(x) + '"' + (picks[x] ? " checked" : "") + "> " + esc(x) + "</label>";
+      }).join("");
+      return '<fieldset class="wg"><legend>' + esc(g[0]) + '</legend><div class="wi">' + boxes + "</div>" + opens + "</fieldset>";
+    }).join("") +
+    '<label class="f">그 밖에 원하시는 점<textarea id="w-note" placeholder="예: 거실 벽은 밝은 톤으로, 수납을 넉넉하게">' + esc(wishNote) + "</textarea></label>" +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn primary" id="w-send" href="' + FORM_URL + '" target="_blank" rel="noopener" style="text-decoration:none">선택한 공사 보내기</a><button class="btn" type="button" id="w-copy">선택 내용 복사</button></div>' +
+    '<p class="muted" id="w-msg" role="status"></p></div>';
+}
+function rerenderWant(){
+  var box = document.getElementById("want"); if (!box) return;
+  var y = window.scrollY; box.outerHTML = wantHTML(); window.scrollTo(0, y);
+}
+function wantText(){
+  var ok = allowed();
+  var chosen = Object.keys(picks).filter(function(k){ return picks[k] && ok[k]; }).map(function(k){
+    var o = opts[k], extra = o ? Object.keys(o).map(function(q){ return o[q]; }).filter(Boolean) : [];
+    return k + (extra.length ? "(" + extra.join(", ") + ")" : "");
+  });
+  var headTxt = isIntro()
+    ? "[더빌드탑 상담 신청]\n공간 종류: " + TYPE_LABEL[itype] + "\n공사할 곳: " + (info.where || "미입력") + "\n면적: " + (info.area || "미입력") + "\n희망 시기: " + (info.when || "미정")
+    : "[더빌드탑 공사 범위 요청]\n현장: " + (state.site.name || "");
+  return headTxt + "\n원하는 공사: " + (chosen.length ? chosen.join(", ") : "선택 없음") + (wishNote.trim() ? "\n그 밖에: " + wishNote.trim() : "");
+}
+function copyText(t){
+  try { return navigator.clipboard.writeText(t).then(function(){ return true; }, function(){ return false; }); } catch(e) { return Promise.resolve(false); }
+}
+var state;
+try { state = JSON.parse(document.getElementById("state").textContent); } catch(e) { state = {site:{},consult:{},quote:{items:[]},progress:{done:{},memo:{}}}; }
+var view = "consult", editing = false, isOwner = false, artifactNs = null, downloadsNs = null, confirmDel = -1;
+var MAKER = state.maker === true; delete state.maker;
+if (!Array.isArray(state.qa)) state.qa = [];
+loadPicks();
+var $ = function(s){ return document.querySelector(s); };
+var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+var won = function(n){ return (Math.round(n) || 0).toLocaleString("ko-KR") + "원"; };
+var fmt = function(d){ return d ? d.replace(/^(\d{4})-(\d{2})-(\d{2})$/, "$1.$2.$3") : ""; };
+var today = function(){ var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); };
+var lines = function(t){ return String(t || "").split("\n").map(function(x){ return x.trim(); }).filter(Boolean); };
+var listHTML = function(a, empty){ return a && a.length ? '<ul class="list">' + a.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : '<p class="muted">' + empty + "</p>"; };
+var askBtn = function(){ return ""; };
+
+function renderHead(){
+  var s = state.site;
+  $("#site-name").textContent = s.name || "현장 이름";
+  $(".brand").textContent = isIntro() ? "THE BUILD TOP · 상담 안내" : "THE BUILD TOP · 고객 전용 페이지";
+  document.title = (s.name || "현장") + (isIntro() ? "" : " 고객 페이지");
+  if (isIntro()) {
+    $("#site-meta").innerHTML = "<span>처음 상담하시는 분을 위한 안내</span><span>담당 <b>대표 김종현</b> · 010-5467-9349</span>";
+    $("#updated").textContent = "더빌드탑 · 건축 실내외 인테리어";
+    return;
+  }
+  var m = ['<span>' + esc(TYPE_LABEL[s.type] || "") + (s.area ? " · " + esc(s.area) : "") + "</span>"];
+  if (s.client) m.push("<span>고객 <b>" + esc(s.client) + "</b> 님</span>");
+  if (s.start) m.push("<span>착공 <b>" + fmt(s.start) + "</b></span>");
+  if (s.end) m.push("<span>준공 예정 <b>" + fmt(s.end) + "</b></span>");
+  m.push("<span>담당 <b>대표 김종현</b> · 010-5467-9349</span>");
+  $("#site-meta").innerHTML = m.join("");
+  $("#updated").textContent = state.updated ? "마지막 업데이트 " + fmt(state.updated) + " · 더빌드탑" : "더빌드탑";
+}
+
+function renderConsult(){
+  var c = state.consult, s = state.site, el = $("#v-consult");
+  if (isIntro()) {
+    if (editing) {
+      el.innerHTML = '<div class="head"><h2>상담 안내 편집</h2></div>' +
+        '<label class="f">페이지 제목<input type="text" id="e-name" value="' + esc(s.name) + '"></label>' +
+        '<label class="f">인사말<textarea id="e-summary">' + esc(c.summary) + '</textarea></label>' +
+        '<div class="grid2">' +
+        '<label class="f">더빌드탑의 약속 (한 줄에 하나)<textarea id="e-scope">' + esc((c.scope || []).join("\n")) + '</textarea></label>' +
+        '<label class="f">상담 진행 순서 (한 줄에 하나)<textarea id="e-next">' + esc((c.next || []).join("\n")) + '</textarea></label>' +
+        '<label class="f">미리 준비해 주시면 좋은 것 (한 줄에 하나)<textarea id="e-decide">' + esc((c.decide || []).join("\n")) + '</textarea></label>' +
+        '</div>';
+      return;
+    }
+    el.innerHTML = '<div class="head"><h2>처음 오신 고객님께</h2></div>' +
+      '<p class="lead">' + esc(c.summary) + '</p>' +
+      '<div class="grid2">' +
+      '<div class="box"><h3>더빌드탑의 약속</h3>' + listHTML(c.scope, "—") + '</div>' +
+      '<div class="box"><h3>상담은 이렇게 진행됩니다</h3>' + listHTML(c.next, "—") + '</div>' +
+      '<div class="box"><h3>미리 준비해 주시면 좋은 것</h3>' + listHTML(c.decide, "—") + '</div>' +
+      '</div>' + wantHTML();
+    return;
+  }
+  if (editing) {
+    el.innerHTML = '<div class="head"><h2>상담 내용 편집</h2></div>' +
+      '<div class="grid2">' +
+      '<label class="f">현장 이름<input type="text" id="e-name" value="' + esc(s.name) + '"></label>' +
+      '<label class="f">고객 성함 (선택)<input type="text" id="e-client" value="' + esc(s.client) + '"></label>' +
+      '<label class="f">공사 유형<select id="e-type">' + Object.keys(TYPE_LABEL).map(function(k){ return '<option value="' + k + '"' + (k === s.type ? " selected" : "") + ">" + TYPE_LABEL[k] + "</option>"; }).join("") + "</select></label>" +
+      '<label class="f">면적·타입<input type="text" id="e-area" value="' + esc(s.area) + '"></label>' +
+      '<label class="f">상담일<input type="date" id="e-cdate" value="' + esc(s.consultDate) + '"></label>' +
+      '<label class="f">착공일<input type="date" id="e-start" value="' + esc(s.start) + '"></label>' +
+      '<label class="f">준공 예정일<input type="date" id="e-end" value="' + esc(s.end) + '"></label>' +
+      "</div>" +
+      '<label class="f">상담 요약<textarea id="e-summary">' + esc(c.summary) + "</textarea></label>" +
+      '<div class="grid2">' +
+      '<label class="f">공사 범위 (한 줄에 하나)<textarea id="e-scope">' + esc((c.scope || []).join("\n")) + "</textarea></label>" +
+      '<label class="f">고객님 요청 사항 (한 줄에 하나)<textarea id="e-requests">' + esc((c.requests || []).join("\n")) + "</textarea></label>" +
+      '<label class="f">다음 단계 (한 줄에 하나)<textarea id="e-next">' + esc((c.next || []).join("\n")) + "</textarea></label>" +
+      '<label class="f">고객님이 정해 주실 것 (한 줄에 하나)<textarea id="e-decide">' + esc((c.decide || []).join("\n")) + "</textarea></label>" +
+      "</div>";
+    return;
+  }
+  el.innerHTML = '<div class="head"><h2>상담 내용</h2>' + askBtn("상담 내용") + "</div>" +
+    (s.consultDate ? '<p class="muted">상담일 ' + fmt(s.consultDate) + "</p>" : "") +
+    '<p class="lead">' + esc(c.summary) + "</p>" +
+    '<div class="grid2">' +
+    '<div class="box"><h3>공사 범위</h3>' + listHTML(c.scope, "상담 후 정리해 드립니다.") + "</div>" +
+    '<div class="box"><h3>고객님 요청 사항</h3>' + listHTML(c.requests, "말씀해 주신 요청 사항을 이곳에 정리해 드립니다.") + "</div>" +
+    '<div class="box"><h3>다음 단계</h3>' + listHTML(c.next, "—") + "</div>" +
+    '<div class="box"><h3>고객님이 정해 주실 것</h3>' + listHTML(c.decide, "지금은 정하실 것이 없습니다.") + "</div>" +
+    "</div>" + wantHTML();
+}
+
+function quoteSums(){
+  var sub = (state.quote.items || []).reduce(function(a, it){ return a + (Number(it.amt) || 0); }, 0);
+  var vat = state.quote.vat ? Math.round(sub * 0.1) : 0;
+  return {sub: sub, vat: vat, total: sub + vat, missing: (state.quote.items || []).some(function(it){ return !Number(it.amt); })};
+}
+
+function renderQuote(){
+  var q = state.quote, el = $("#v-quote"), t = quoteSums();
+  if (editing) {
+    el.innerHTML = '<div class="head"><h2>견적·제안 편집</h2></div>' +
+      '<div class="grid2"><label class="f">견적 상태<select id="e-qstatus">' + ["작성 중","제안 드림","확정"].map(function(x){ return "<option" + (x === q.status ? " selected" : "") + ">" + x + "</option>"; }).join("") + '</select></label>' +
+      '<label class="chk" style="align-self:end"><input type="checkbox" id="e-vat"' + (q.vat ? " checked" : "") + "> 부가세 10% 별도 계산</label></div>" +
+      '<div class="tablewrap"><table class="ed"><thead><tr><th style="width:22%">공정</th><th>내용</th><th class="amt" style="width:22%">금액 (원)</th><th style="width:60px"></th></tr></thead><tbody>' +
+      (q.items || []).map(function(it, i){
+        return '<tr><td><input type="text" id="e-g-' + i + '" data-i="' + i + '" data-k="g" value="' + esc(it.g) + '"></td>' +
+          '<td><input type="text" id="e-n-' + i + '" data-i="' + i + '" data-k="name" value="' + esc(it.name) + '"></td>' +
+          '<td><input type="number" inputmode="numeric" min="0" step="10000" id="e-a-' + i + '" data-i="' + i + '" data-k="amt" value="' + (Number(it.amt) || "") + '" placeholder="미정"></td>' +
+          '<td>' + (confirmDel === i ? '<button class="btn danger" type="button" data-delyes="' + i + '">삭제</button>' : '<button class="btn" type="button" data-del="' + i + '" aria-label="이 줄 삭제">✕</button>') + "</td></tr>";
+      }).join("") +
+      '</tbody></table></div><div><button class="btn" type="button" id="add-row">+ 항목 추가</button></div>' +
+      '<label class="f">안내 문구<textarea id="e-qnote">' + esc(q.note) + "</textarea></label>";
+    return;
+  }
+  var rows = (q.items || []).map(function(it){
+    return "<tr><td>" + esc(it.g) + "</td><td>" + esc(it.name) + '</td><td class="amt">' + (Number(it.amt) ? won(it.amt) : '<span class="tbd">실측 후 확정</span>') + "</td></tr>";
+  }).join("");
+  el.innerHTML = '<div class="head"><h2>견적·제안 <span class="pill">' + esc(q.status || "작성 중") + "</span></h2>" + askBtn("견적·제안") + "</div>" +
+    (q.items && q.items.length ? '<div class="tablewrap"><table><thead><tr><th style="width:22%">공정</th><th>내용</th><th class="amt">금액</th></tr></thead><tbody>' + rows + "</tbody></table></div>" : '<p class="muted">견적서를 준비하고 있습니다.</p>') +
+    (t.sub ? '<div class="sum"><div><span class="muted">공사 금액</span><span>' + won(t.sub) + "</span></div>" + (q.vat ? '<div><span class="muted">부가세 10%</span><span>' + won(t.vat) + "</span></div>" : "") + '<div><span class="muted">합계</span><span class="total">' + won(t.total) + "</span></div>" + (t.missing ? '<p class="muted">금액이 정해지지 않은 항목은 합계에서 빠져 있습니다.</p>' : "") + "</div>" : "") +
+    (q.note ? '<p class="muted">' + esc(q.note) + "</p>" : "");
+}
+
+function renderProgress(){
+  if (isIntro()) {
+    var st = STEPS[itype] || STEPS.res;
+    $("#v-progress").innerHTML = '<div class="head"><h2>공사 진행 순서</h2><span class="pill">' + TYPE_LABEL[itype] + '</span></div>' +
+      '<p class="muted">상담부터 A/S까지 이 순서로 진행합니다. 위 상담 안내에서 공간 종류를 바꾸면 순서도 바뀝니다. 계약하시면 고객님 전용 페이지에서 단계마다 완료 날짜와 사진 메모를 보실 수 있습니다.</p>' +
+      '<ol class="rail">' + st.map(function(name, i){ return '<li><span class="dot">' + (i + 1) + '</span><span class="nm">' + esc(name) + '</span><span></span></li>'; }).join("") + '</ol>';
+    return;
+  }
+  var steps = STEPS[state.site.type] || STEPS.res, p = state.progress, el = $("#v-progress");
+  var doneN = steps.filter(function(_, i){ return p.done[i]; }).length, pct = Math.round(doneN / steps.length * 100);
+  var nowI = steps.findIndex(function(_, i){ return !p.done[i]; });
+  var items = steps.map(function(name, i){
+    var d = p.done[i], cls = d ? "done" : (i === nowI ? "now" : "");
+    if (editing) {
+      return '<li class="' + cls + '"><span class="dot">' + (d ? "✓" : i + 1) + '</span><span class="nm">' + esc(name) + '</span>' +
+        '<label class="chk"><input type="checkbox" id="e-d-' + i + '" data-step="' + i + '"' + (d ? " checked" : "") + "> 완료" + (d ? " " + fmt(d) : "") + "</label>" +
+        '<label class="f memo">전달 메모<input type="text" id="e-m-' + i + '" data-memo="' + i + '" value="' + esc(p.memo[i] || "") + '" placeholder="예: 배관 상태 양호, 사진 보내 드렸습니다"></label></li>';
+    }
+    return '<li class="' + cls + '"><span class="dot">' + (d ? "✓" : i + 1) + '</span><span class="nm">' + esc(name) + "</span>" +
+      '<span class="when">' + (d ? fmt(d) + " 완료" : (i === nowI ? "진행 중 / 다음 차례" : "")) + "</span>" +
+      (p.memo[i] ? '<span class="memo">' + esc(p.memo[i]) + "</span>" : "") + "</li>";
+  }).join("");
+  el.innerHTML = '<div class="head"><h2>' + (editing ? "진행 현황 편집" : "진행 현황") + "</h2>" + (editing ? "" : askBtn("진행 현황")) + "</div>" +
+    '<div class="bar" role="progressbar" aria-label="공사 진행률" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pct + '%"></i></div>' +
+    '<p class="muted">진행률 ' + pct + "% · " + doneN + " / " + steps.length + " 단계 완료</p>" +
+    '<ol class="rail">' + items + "</ol>";
+}
+
+function renderQA(){
+  var el = $("#v-qa"), list = state.qa;
+  if (editing) {
+    el.innerHTML = '<div class="head"><h2>질문·답변 편집</h2></div>' +
+      '<p class="muted">고객님께 받은 질문과 답변을 적어 두면 이 페이지에서 고객님이 바로 보실 수 있습니다. 위에 있을수록 최근 글입니다.</p>' +
+      list.map(function(x, i){
+        return '<div class="box" style="border-top:1px solid var(--line);padding-top:12px">' +
+          '<label class="f">질문<input type="text" id="e-q-' + i + '" data-qi="' + i + '" data-qk="q" value="' + esc(x.q) + '"></label>' +
+          '<label class="f">답변<textarea id="e-a2-' + i + '" data-qi="' + i + '" data-qk="a">' + esc(x.a) + '</textarea></label>' +
+          '<div>' + (confirmDel === 1000 + i ? '<button class="btn danger" type="button" data-qdelyes="' + i + '">삭제</button>' : '<button class="btn" type="button" data-qdel="' + i + '">이 질문 삭제</button>') + '</div></div>';
+      }).join("") +
+      '<div><button class="btn" type="button" id="add-qa">+ 질문·답변 추가</button></div>';
+    return;
+  }
+  el.innerHTML = '<div class="head"><h2>질문·답변</h2></div>' +
+    (list.length ? list.map(function(x){
+      return '<div class="box" style="border-top:1px solid var(--line);padding-top:14px">' +
+        '<p style="margin:0;font-weight:700"><span style="color:var(--gold)">Q.</span> ' + esc(x.q) + '</p>' +
+        (x.a ? '<p style="margin:0"><span style="color:var(--done);font-weight:700">A.</span> ' + esc(x.a) + '</p>' : '<p class="muted">답변을 준비하고 있습니다.</p>') +
+        (x.date ? '<p class="muted">' + fmt(x.date) + '</p>' : '') + '</div>';
+    }).join("") : '<p class="muted">아직 올라온 질문이 없습니다. 아래 <b>질문 보내기</b>로 궁금하신 점을 남겨 주시면 이곳에 답변을 올려 드립니다.</p>');
+}
+
+function newSlug(){
+  var d = new Date(), r = Math.random().toString(36).slice(2, 6);
+  return "c-" + String(d.getFullYear()).slice(2) + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0") + "-" + r;
+}
+function blankCustomer(){
+  return {site:{name:"새 고객 현장", slug:newSlug(), type:"res", area:"", client:"", consultDate:today(), start:"", end:""},
+    consult:{summary:"", scope:[], requests:[], next:["현장 실측·상태 진단","디자인·자재 선정 (실물 샘플 확인)","공정별 견적 확정·계약","착공일 확정"], decide:["착공 희망 시기","마감재 선택"]},
+    quote:{status:"작성 중", items:[{g:"철거",name:"기존 마감재 철거, 폐기물 반출",amt:0},{g:"설비·전기",name:"배관, 전기 배선",amt:0},{g:"목공",name:"천장·몰딩·문틀",amt:0},{g:"욕실",name:"방수·타일·도기",amt:0},{g:"주방",name:"주방 가구·상판",amt:0},{g:"도배",name:"도배",amt:0},{g:"바닥",name:"바닥재·걸레받이",amt:0},{g:"마감",name:"조명·청소",amt:0}], vat:true, note:"금액은 현장 실측 후 공정별로 확정해 안내해 드립니다."},
+    progress:{done:{}, memo:{}}, qa:[], updated:""};
+}
+function makerBar(bar){
+  var kindTxt = isIntro() ? "첫 상담 안내 페이지" : "고객 전용 페이지";
+  bar.innerHTML = editing
+    ? '<span>편집 중 · ' + kindTxt + '</span><span class="acts"><button class="btn" type="button" id="cancel-edit">취소</button><button class="btn primary" type="button" id="apply-edit">편집 완료</button></span>'
+    : '<span><b>고객 페이지 만들기</b> · 지금 화면: ' + kindTxt + ' <b>' + esc(state.site.name || "") + '</b></span>' +
+      '<span class="acts"><button class="btn" type="button" id="mk-new">새 고객으로 시작</button><button class="btn" type="button" id="mk-load">고객 파일 불러오기</button><button class="btn" type="button" id="start-edit">내용 편집</button>' +
+      (downloadsNs ? '<button class="btn primary" type="button" id="dl-file">고객용 파일 받기</button>' : '') + '</span>' +
+      '<span class="muted" style="flex-basis:100%">고객 링크: thebuildtop.github.io/' + esc(state.site.slug || "") + '.html — 받은 파일을 GitHub에 올리면 이 주소로 열립니다. 고객이 바뀌면 <b>새 고객으로 시작</b>을 눌러 새 주소로 만드세요.</span>' +
+      '<span class="muted" id="dl-msg" role="status" style="flex-basis:100%"></span>';
+}
+
+function renderOwnerBar(){
+  var bar = $("#ownerbar");
+  if (!isOwner) { bar.hidden = true; return; }
+  bar.hidden = false;
+  if (MAKER) { makerBar(bar); return; }
+  bar.innerHTML = editing
+    ? '<span>편집 중입니다. 저장해야 고객님 화면에 반영됩니다.</span><span class="acts"><button class="btn" type="button" id="cancel-edit">취소</button><button class="btn primary" type="button" id="save">저장해서 고객에게 보이기</button></span>'
+    : '<span>대표님 화면입니다. 고객님은 이 줄과 편집 버튼을 보지 못합니다.' + (downloadsNs ? ' 저장한 뒤 <b>고객용 파일</b>을 받아 홈페이지(GitHub)에 같은 이름으로 올리면 고객 링크가 바뀝니다.' : '') + '</span><span class="acts">' + (downloadsNs ? '<button class="btn" type="button" id="dl-file">고객용 파일 받기</button>' : '') + '<button class="btn primary" type="button" id="start-edit">내용 편집</button></span>' + (state.site.slug ? '<span class="muted" style="flex-basis:100%">고객 링크: thebuildtop.github.io/' + esc(state.site.slug) + '.html</span>' : '') + '<span class="muted" id="dl-msg" role="status" style="flex-basis:100%"></span>';
+}
+
+function render(){
+  if (isIntro() && view === "quote") view = "consult";
+  renderHead(); renderConsult(); renderQuote(); renderProgress(); renderQA(); renderOwnerBar();
+  $("#t-quote").hidden = isIntro();
+  $("#copy-site").hidden = isIntro();
+  $("#t-consult").textContent = isIntro() ? "상담 안내" : "상담 내용";
+  $("#t-progress").textContent = isIntro() ? "공사 진행 순서" : "진행 현황";
+  ["consult","quote","progress","qa"].forEach(function(v){
+    $("#v-" + v).hidden = v !== view;
+    $("#t-" + v).setAttribute("aria-selected", v === view);
+  });
+}
+
+function readEdits(){
+  var v = function(id){ var n = document.getElementById(id); return n ? n.value : undefined; };
+  if (isIntro() && view === "consult" && document.getElementById("e-name")) {
+    state.site.name = v("e-name").trim(); state.consult.summary = v("e-summary").trim();
+    state.consult.scope = lines(v("e-scope")); state.consult.next = lines(v("e-next")); state.consult.decide = lines(v("e-decide"));
+    return;
+  }
+  if (view === "consult" && document.getElementById("e-name")) {
+    var s = state.site, c = state.consult;
+    s.name = v("e-name").trim(); s.client = v("e-client").trim(); s.type = v("e-type"); s.area = v("e-area").trim();
+    s.consultDate = v("e-cdate"); s.start = v("e-start"); s.end = v("e-end");
+    c.summary = v("e-summary").trim(); c.scope = lines(v("e-scope")); c.requests = lines(v("e-requests")); c.next = lines(v("e-next")); c.decide = lines(v("e-decide"));
+  }
+  if (view === "quote" && document.getElementById("e-qstatus")) {
+    state.quote.status = v("e-qstatus"); state.quote.vat = document.getElementById("e-vat").checked; state.quote.note = v("e-qnote").trim();
+  }
+}
+
+document.addEventListener("click", function(e){
+  var ws = e.target.closest("#w-send");
+  if (ws) {
+    copyText(wantText()).then(function(ok){ var m = $("#w-msg"); if (m) m.textContent = ok ? "선택 내용을 복사했습니다. 열린 신청서의 문의 내용 칸에 붙여 넣고 제출해 주세요." : "열린 신청서에 위에서 고른 공사를 적어 주세요."; });
+    return;
+  }
+  var t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.v) { if (editing) readEdits(); view = t.dataset.v; confirmDel = -1; render(); return; }
+  if (t.id === "w-copy") {
+    copyText(wantText()).then(function(ok){
+      var m = $("#w-msg");
+      if (m) m.textContent = ok ? "선택 내용을 복사했습니다. 문자나 카카오톡으로 010-5467-9349에 보내 주셔도 됩니다." : "복사가 되지 않는 화면입니다. 고른 공사를 010-5467-9349로 문자 주세요.";
+    });
+    return;
+  }
+  if (t.id === "copy-site") {
+    var txt = "현장: " + (state.site.name || "");
+    var done = function(ok){ $("#copy-msg").textContent = ok ? "현장 이름을 복사했습니다. 질문 내용 맨 앞에 붙여 넣어 주세요." : txt + " — 질문 내용에 함께 적어 주세요."; };
+    try { navigator.clipboard.writeText(txt).then(function(){ done(true); }, function(){ done(false); }); } catch(err) { done(false); }
+    return;
+  }
+  if (t.id === "add-qa") { state.qa.unshift({q:"", a:"", date: today()}); render(); var q0 = document.getElementById("e-q-0"); if (q0) q0.focus(); return; }
+  if (t.dataset.qdel) { confirmDel = 1000 + Number(t.dataset.qdel); render(); return; }
+  if (t.dataset.qdelyes) { state.qa.splice(Number(t.dataset.qdelyes), 1); confirmDel = -1; render(); return; }
+  if (t.id === "start-edit") { state = JSON.parse(JSON.stringify(state)); window.__backup = JSON.stringify(state); editing = true; render(); return; }
+  if (t.id === "cancel-edit") { state = JSON.parse(window.__backup); editing = false; confirmDel = -1; render(); return; }
+  if (t.id === "save") { readEdits(); save(t); return; }
+  if (t.id === "apply-edit") { readEdits(); state.qa = state.qa.filter(function(x){ return (x.q || "").trim() || (x.a || "").trim(); }); state.updated = today(); editing = false; loadPicks(); render(); return; }
+  if (t.id === "mk-new") { state = blankCustomer(); view = "consult"; loadPicks(); editing = true; window.__backup = JSON.stringify(state); render(); var n0 = document.getElementById("e-name"); if (n0) { n0.focus(); n0.select(); } return; }
+  if (t.id === "mk-load") { var fi = document.getElementById("load-file"); if (fi) fi.click(); return; }
+  if (t.dataset.itype) { itype = t.dataset.itype; savePicks(); rerenderWant(); renderProgress(); return; }
+  if (t.id === "dl-file") {
+    if (!downloadsNs) return;
+    downloadsNs.save({filename: (state.site.slug || "customer") + ".html", data: buildDoc(true)}).then(function(){
+      var m = $("#dl-msg"); if (m) m.textContent = "파일을 받았습니다. GitHub 저장소에 Add file → Upload files로 올려 주세요.";
+    }, function(){ var m = $("#dl-msg"); if (m) m.textContent = "파일을 받지 않았습니다. 다시 눌러 주세요."; });
+    return;
+  }
+  if (t.id === "add-row") { readEdits(); state.quote.items.push({g:"", name:"", amt:0}); render(); var n = document.getElementById("e-g-" + (state.quote.items.length - 1)); if (n) n.focus(); return; }
+  if (t.dataset.del) { readEdits(); confirmDel = Number(t.dataset.del); render(); return; }
+  if (t.dataset.delyes) { readEdits(); state.quote.items.splice(Number(t.dataset.delyes), 1); confirmDel = -1; render(); return; }
+});
+document.addEventListener("input", function(e){
+  var t = e.target;
+  if (t.dataset.k) { var it = state.quote.items[Number(t.dataset.i)]; it[t.dataset.k] = t.dataset.k === "amt" ? (Number(t.value) || 0) : t.value; }
+  if (t.id === "w-note") { wishNote = t.value; }
+  if (t.dataset.info) { info[t.dataset.info] = t.value; savePicks(); }
+  if (t.dataset.qk) { state.qa[Number(t.dataset.qi)][t.dataset.qk] = t.value; }
+  if (t.dataset.memo) { var k = t.dataset.memo; if (t.value.trim()) state.progress.memo[k] = t.value; else delete state.progress.memo[k]; }
+});
+document.addEventListener("change", function(e){
+  var t = e.target;
+  if (t.id === "load-file" && t.files && t.files[0]) {
+    var rd = new FileReader();
+    rd.onload = function(){
+      var m = String(rd.result).match(/id="state">([\s\S]*?)<\/script>/), msg = $("#dl-msg");
+      try { var ns = JSON.parse(m[1]); delete ns.maker; if (!ns.site) throw 0; state = ns; if (!state.site.slug) state.site.slug = newSlug(); if (!Array.isArray(state.qa)) state.qa = []; view = "consult"; editing = false; loadPicks(); render(); msg = $("#dl-msg"); if (msg) msg.textContent = "불러왔습니다: " + (state.site.name || ""); }
+      catch(err) { if (msg) msg.textContent = "더빌드탑 고객 파일이 아닙니다. 고객용 파일 받기로 만든 .html 파일을 골라 주세요."; }
+      t.value = "";
+    };
+    rd.readAsText(t.files[0]);
+    return;
+  }
+  if (t.dataset.info) { info[t.dataset.info] = t.value; savePicks(); return; }
+  if (t.dataset.want) {
+    if (t.checked) picks[t.dataset.want] = 1; else delete picks[t.dataset.want];
+    if (!t.checked) delete opts[t.dataset.want];
+    savePicks();
+    if (OPTS[t.dataset.want]) { var fid = t.id; rerenderWant(); var f = document.getElementById(fid); if (f) f.focus(); }
+    else { var cnt = document.querySelector("#want .head .muted"); if (cnt) cnt.textContent = Object.keys(picks).length + "개 선택"; }
+    return;
+  }
+  if (t.dataset.optItem) {
+    var it = t.dataset.optItem; opts[it] = opts[it] || {}; opts[it][t.dataset.optQ] = t.value; savePicks();
+    return;
+  }
+  if (t.dataset.step) {
+    var i = t.dataset.step;
+    if (t.checked) state.progress.done[i] = today(); else delete state.progress.done[i];
+    var memos = {}; document.querySelectorAll("[data-memo]").forEach(function(n){ memos[n.id] = n.value; });
+    renderProgress();
+    Object.keys(memos).forEach(function(id){ var n = document.getElementById(id); if (n) n.value = memos[id]; });
+  }
+});
+
+function buildDoc(forFile){
+  var json = JSON.stringify(state).replace(/</g, "\\u003c");
+  var i = BODY_SRC.indexOf(M1), j = BODY_SRC.indexOf(M2);
+  var body = BODY_SRC.slice(0, i) + M1 + '<script type="application/json" id="state">' + json + "</scr" + "ipt>" + BODY_SRC.slice(j);
+  var reset = (document.head.querySelector("style") || {}).textContent || "";
+  if (forFile) {
+    var ttl = esc(state.site.name || "더빌드탑") + (isIntro() ? "" : " 고객 페이지");
+    body = body.replace(/<title>[\s\S]*?<\/title>/, "<title>" + ttl + "</title>");
+    return '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><title>' + ttl + '</title><style>' + reset + "</style></head><body>" + body + "</body></html>";
+  }
+  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + reset + "</style></head><body>" + body + "</body></html>";
+}
+function save(btn){
+  if (!artifactNs) return;
+  btn.disabled = true; btn.textContent = "저장 중…";
+  state.qa = state.qa.filter(function(x){ return (x.q || "").trim() || (x.a || "").trim(); });
+  state.updated = today();
+  artifactNs.publish(buildDoc()).then(function(){ editing = false; render(); }, function(err){
+    if (err && err.code === "conflict") return;
+    btn.disabled = false; btn.textContent = "다시 저장";
+    var n = document.getElementById("ownerbar");
+    if (n && !n.querySelector(".note")) n.insertAdjacentHTML("beforeend", '<p class="note">저장하지 못했습니다. 잠시 뒤 다시 저장해 주세요.</p>');
+  });
+}
+
+render();
+
+(function(){
+  if (!window.claude || !window.claude.use) return;
+  Promise.all([window.claude.use("artifact"), window.claude.use("user")]).then(function(r){
+    var a = r[0], u = r[1]; if (!u) return;
+    return u.isOwner().then(function(o){
+      if (!o) return;
+      artifactNs = MAKER ? null : a; isOwner = true; render();
+      return window.claude.use("downloads").then(function(d){ if (d) { downloadsNs = d; render(); } }, function(){});
+    });
+  }).catch(function(){});
+})();
+})();
+</script>
+
+</body>
+</html>
