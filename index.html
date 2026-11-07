@@ -401,6 +401,8 @@ window.CASES = [
     imgs: ["case-apt-oak-1.jpg","case-apt-oak-2.jpg","case-apt-oak-3.jpg","case-apt-oak-4.jpg","case-apt-oak-5.jpg"] },
   { title: "욕실 리모델링", type: "res", desc: "벽 패널과 바닥 타일, 타원형 LED 거울, 간접조명 선반, 유리 파티션 샤워 공간",
     imgs: ["case-bath-1.jpg","case-bath-2.jpg"] },
+  { title: "아파트 ㄷ자 주방 싱크대 교체", type: "res", desc: "핸들 없는 웜 그레이 ㄷ자 싱크대, 상부장 하부 간접조명, 대형 포세린 타일 벽과 돔 펜던트 조명",
+    imgs: ["case-kitchen-1.jpg","case-kitchen-2.jpg"] },
   { title: "생맥주 전문점 실속 리뉴얼", type: "com", desc: "합리적인 예산 안에서 원목 천장과 기둥, 창살 간접조명 창, 단차 좌석, 당구 공간까지 갖춘 펍 공간",
     imgs: ["case-pub-1.jpg","case-pub-2.jpg","case-pub-3.jpg","case-pub-4.jpg"] },
   { title: "식당 리노베이션", type: "com", desc: "외관 파사드, 주방과 객석 분리, 조명 계획", imgs: [], tone: "c1" },
@@ -417,7 +419,15 @@ var KIND = {res:'주거', com:'상업 공간', ext:'외부·방수'};
 
 /* 시공 사례 */
 var cases = window.CASES || [], filt = 'all', lbCase = null, lbAt = 0;
-function pics(c){ return (c.imgs && c.imgs.length) ? c.imgs : (c.img ? [c.img] : []); }
+var broken = {};
+function pics(c){ var a = (c.imgs && c.imgs.length) ? c.imgs : (c.img ? [c.img] : []); return a.filter(function(s){return !broken[s]}); }
+/* 아직 안 올라간 사진은 건너뛰기 (검은 화면 방지) */
+document.addEventListener('error',function(e){
+  var t=e.target; if(!t || t.tagName!=='IMG') return;
+  var s=t.getAttribute('src'); if(!s || broken[s]) return; broken[s]=1;
+  if(t.closest('#lb-ph')){ var n=pics(lbCase||{}).length; if(lbAt>=n) lbAt=0; showLb(); }
+  renderCases();
+},true);
 function showLb(){
   var c = lbCase, im = pics(c);
   $('#lb-ph').className = 'ph ' + (im.length ? '' : (c.tone||'c1'));
