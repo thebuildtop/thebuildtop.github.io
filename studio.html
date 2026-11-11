@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>더빌드탑 디자인 스튜디오</title>
+<meta name="description" content="사진 비교, 내 방 3D 보기, 스타일 선택, 디자인 시안 신청과 결제를 한 곳에서. 더빌드탑 디자인 스튜디오.">
+<meta property="og:title" content="더빌드탑 디자인 스튜디오">
+<meta property="og:description" content="내 공간을 미리 보고, 스타일을 고르고, 디자인 시안을 신청하세요.">
+<meta property="og:url" content="https://thebuildtop.github.io/studio.html">
+<link rel="canonical" href="https://thebuildtop.github.io/studio.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600&family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F6F2EB;--bg2:#EAE3D8;--card:#FBF8F3;--ink:#2B2A28;--ink2:#6F6A63;--gold:#8F6B38;--dark:#1F1E1C;--line:#D9D2C6;--on-dark:#F6F2EB;--on-dark2:#B9B2A6;
+--serif:"Noto Serif KR",serif;--sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1A1917;--bg2:#24221F;--card:#201E1B;--ink:#EDE7DC;--ink2:#A59E93;--gold:#C9A468;--dark:#11100F;--line:#3A3631;color-scheme:dark}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:500;margin:0;line-height:1.3;word-break:keep-all;text-wrap:balance}
+p{margin:0;word-break:keep-all}
+a{color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:60px}
+.logo{font-family:var(--serif);font-weight:600;font-size:20px;text-decoration:none}
+header nav{display:flex;gap:20px;font-size:14px;overflow-x:auto}
+header nav a{text-decoration:none;color:var(--ink2);white-space:nowrap}
+header nav a:hover{color:var(--gold)}
+.call{font-size:14px;font-weight:600;color:var(--gold);text-decoration:none;white-space:nowrap}
+@media (max-width:820px){header nav{display:none}}
+section{padding:64px 0;scroll-margin-top:60px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:13px;letter-spacing:.12em;color:var(--gold);font-weight:600;margin-bottom:10px}
+h1{font-size:clamp(30px,5vw,48px)}
+h2{font-size:clamp(24px,3.4vw,30px)}
+.sub{color:var(--ink2);margin-top:14px;max-width:680px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;background:var(--gold);color:#fff;text-decoration:none;border:0;border-radius:2px;font:600 15px var(--sans);cursor:pointer;min-height:46px}
+.btn:hover{filter:brightness(.92)}
+.btn.line{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.line:hover{border-color:var(--gold);filter:none}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}}
+label{display:block;font-size:14px;font-weight:600;margin:14px 0 6px}
+input,select,textarea{width:100%;font:400 15px var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:10px 12px}
+textarea{min-height:90px;resize:vertical}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hint{font-size:13px;color:var(--ink2);margin-top:8px}
+.note{font-size:13px;color:var(--ink2);border-left:3px solid var(--gold);padding:8px 12px;background:var(--bg2);margin-top:16px}
+
+/* Hero */
+.hero{padding:56px 0 48px}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center}
+@media (max-width:860px){.hero .wrap{grid-template-columns:1fr}}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:28px}
+.tools a{display:block;padding:14px;border:1px solid var(--line);border-radius:2px;text-decoration:none;background:var(--card)}
+.tools a b{display:block;font-family:var(--serif);font-weight:600}
+.tools a span{font-size:13px;color:var(--ink2)}
+.tools a:hover{border-color:var(--gold)}
+
+/* Before/After */
+.ba{position:relative;aspect-ratio:3/2;overflow:hidden;border-radius:4px;background:var(--bg2);user-select:none;touch-action:pan-y}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.ba .after{clip-path:inset(0 0 0 var(--pos,50%))}
+.ba .bar{position:absolute;top:0;bottom:0;left:var(--pos,50%);width:2px;background:#fff;transform:translateX(-1px)}
+.ba .knob{position:absolute;top:50%;left:var(--pos,50%);width:44px;height:44px;border-radius:50%;background:#fff;color:#1F1E1C;display:grid;place-items:center;transform:translate(-50%,-50%);box-shadow:0 2px 10px rgba(0,0,0,.3);font-weight:700;font-size:15px}
+.ba .tag{position:absolute;top:12px;padding:3px 10px;background:rgba(20,19,18,.7);color:#fff;font-size:12px;letter-spacing:.06em;border-radius:2px}
+.ba .tag.l{left:12px}.ba .tag.r{right:12px}
+.ba input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.upl{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.upl label{margin:0}
+.upl .btn{font-size:14px;min-height:40px;padding:8px 16px}
+.vis{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* Style chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px 14px;border-radius:999px;font:400 14px var(--sans);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:#fff}
+.styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-top:8px}
+.style{border:1px solid var(--line);border-radius:4px;overflow:hidden;cursor:pointer;background:var(--card);text-align:left;padding:0;font:inherit;color:inherit}
+.style .sw{height:64px;display:flex}
+.style .sw i{flex:1}
+.style div.t{padding:10px 12px}
+.style b{font-family:var(--serif);font-weight:600;display:block}
+.style span{font-size:12px;color:var(--ink2)}
+.style[aria-pressed=true]{outline:2px solid var(--gold);outline-offset:-2px}
+
+/* Preview (tone) */
+.prev{position:relative;aspect-ratio:4/3;border-radius:4px;background:var(--bg2);overflow:hidden;display:grid;place-items:center;color:var(--ink2);font-size:14px;text-align:center;padding:16px}
+.prev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.prev .wash{position:absolute;inset:0;mix-blend-mode:soft-light;pointer-events:none}
+
+/* 3D */
+#v3d{position:relative;aspect-ratio:4/3;border-radius:4px;background:#24221F;overflow:hidden;touch-action:none;cursor:grab}
+#v3d canvas{display:block;width:100%!important;height:100%!important}
+#v3d .help{position:absolute;left:10px;bottom:8px;color:#B9B2A6;font-size:12px;pointer-events:none}
+#v3d .area{position:absolute;right:10px;top:8px;color:#F6F2EB;font-size:13px;background:rgba(0,0,0,.4);padding:3px 8px;border-radius:2px}
+.views{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.views .btn{min-height:36px;padding:6px 14px;font-size:13px}
+
+/* Pay */
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:28px}
+.plan h3{font-size:20px}
+.plan ul{padding-left:18px;margin:12px 0 0;color:var(--ink2);font-size:14px}
+.plan .price{font-family:var(--serif);font-size:20px;color:var(--gold);margin-top:10px}
+.pay{margin-top:28px}
+.acct{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px;background:var(--bg2);border-radius:2px;margin-top:12px}
+.acct b{font-size:18px;letter-spacing:.02em}
+footer{padding:36px 0 60px;color:var(--ink2);font-size:13px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--dark);color:var(--on-dark);padding:10px 18px;border-radius:2px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:50}
+.toast.on{opacity:1}
+.sum{white-space:pre-wrap;font-size:14px;background:var(--bg2);padding:14px;border-radius:2px;margin-top:16px;max-height:240px;overflow:auto}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap">
+  <a class="logo" href="index.html">더빌드탑</a>
+  <nav aria-label="스튜디오 메뉴"><a href="#compare">사진 비교</a><a href="#room3d">내 방 3D</a><a href="#style">스타일·시안 신청</a><a href="#pay">결제 안내</a><a href="index.html">홈으로</a></nav>
+  <a class="call" href="tel:01054679349">010-5467-9349</a>
+ </div>
+</header>
+
+<main>
+<section class="hero">
+ <div class="wrap">
+  <div>
+   <p class="eyebrow">THEBUILDTOP DESIGN STUDIO</p>
+   <h1>공사 전에,<br>먼저 보고 결정하세요</h1>
+   <p class="sub">사진을 비교하고, 방 치수로 3D 공간을 둘러보고, 원하는 스타일을 골라 디자인 시안을 신청하세요. 시안은 더빌드탑이 직접 만들어 보내드립니다.</p>
+   <div class="tools">
+    <a href="#compare"><b>사진 비교</b><span>전·후 사진을 밀어서 비교</span></a>
+    <a href="#room3d"><b>내 방 3D</b><span>치수만 넣으면 입체로</span></a>
+    <a href="#style"><b>스타일 고르기</b><span>사진에 톤 미리 입혀 보기</span></a>
+    <a href="#style"><b>디자인 시안 신청</b><span>사진 + 스타일로 시안 요청</span></a>
+   </div>
+  </div>
+  <div>
+   <div class="ba" id="ba-hero" style="--pos:50%">
+    <img src="case-apt-oak-1.jpg" alt="내추럴 오크 톤으로 마감한 거실">
+    <img class="after" src="case-apt-white-1.jpg" alt="모던 화이트 톤으로 마감한 공간">
+    <div class="bar"></div><div class="knob" aria-hidden="true">‹›</div>
+    <span class="tag l">오크 톤</span><span class="tag r">화이트 톤</span>
+    <input type="range" min="0" max="100" value="50" aria-label="두 사진 비교 위치">
+   </div>
+   <p class="hint">더빌드탑 시공 사례 — 밀어서 두 가지 마감 톤을 비교해 보세요.</p>
+  </div>
+ </div>
+</section>
+
+<!-- 1. 사진 비교 -->
+<section id="compare">
+ <div class="wrap">
+  <p class="eyebrow">01 · 사진 비교</p>
+  <h2>지금 우리 집과 원하는 모습을 나란히</h2>
+  <p class="sub">현재 사진과 마음에 드는 참고 사진을 올리면 한 화면에서 밀어서 비교할 수 있습니다. 사진은 고객님 기기 안에서만 보이고 어디에도 올라가지 않습니다.</p>
+  <div class="grid2">
+   <div>
+    <div class="ba" id="ba-user" style="--pos:50%">
+     <img id="u-before" alt="현재 사진" hidden>
+     <img id="u-after" class="after" alt="참고 사진" hidden>
+     <div class="bar"></div><div class="knob" aria-hidden="true">‹›</div>
+     <span class="tag l">현재</span><span class="tag r">참고</span>
+     <input type="range" min="0" max="100" value="50" aria-label="내 사진 비교 위치">
+    </div>
+    <div class="upl">
+     <label class="btn line" for="f-before">현재 사진 올리기</label><input class="vis" type="file" id="f-before" accept="image/*">
+     <label class="btn line" for="f-after">참고 사진 올리기</label><input class="vis" type="file" id="f-after" accept="image/*">
+    </div>
+   </div>
+   <div class="card">
+    <h3>이렇게 쓰시면 좋습니다</h3>
+    <p class="sub" style="margin-top:10px">① 고칠 공간을 같은 위치에서 찍어 주세요.<br>② 인스타그램·잡지 등에서 마음에 드는 사진을 참고 사진으로 올리세요.<br>③ 비교하면서 바꾸고 싶은 곳(바닥, 벽, 조명, 수납)을 정리해 두시면 상담이 훨씬 빨라집니다.</p>
+    <a class="btn" href="#style" style="margin-top:20px">이 사진으로 시안 신청하기</a>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 2. 내 방 3D -->
+<section id="room3d">
+ <div class="wrap">
+  <p class="eyebrow">02 · 내 방 3D</p>
+  <h2>치수만 넣으면 공간이 입체로 보입니다</h2>
+  <p class="sub">가로·세로·천장 높이와 문·창 개수를 넣어 보세요. 평면도 사진이 있으면 바닥에 깔아 볼 수도 있습니다. 정확한 치수는 실측 날 더빌드탑이 다시 확인합니다.</p>
+  <div class="grid2">
+   <div>
+    <div id="v3d"><span class="area" id="area">—</span><span class="help">끌어서 회전 · 휠/두 손가락으로 확대</span></div>
+    <div class="views">
+     <button class="btn line" type="button" data-view="iso">기본 보기</button>
+     <button class="btn line" type="button" data-view="top">위에서</button>
+     <button class="btn line" type="button" data-view="front">정면</button>
+    </div>
+   </div>
+   <div class="card">
+    <div class="row">
+     <div><label for="rw">가로 (m)</label><input id="rw" type="number" step="0.1" min="1" max="30" value="4.2"></div>
+     <div><label for="rd">세로 (m)</label><input id="rd" type="number" step="0.1" min="1" max="30" value="3.6"></div>
+     <div><label for="rh">천장 (m)</label><input id="rh" type="number" step="0.05" min="2" max="6" value="2.3"></div>
+    </div>
+    <div class="row">
+     <div><label for="rdoor">문</label><select id="rdoor"><option>0</option><option selected>1</option><option>2</option></select></div>
+     <div><label for="rwin">창</label><select id="rwin"><option>0</option><option selected>1</option><option>2</option><option>3</option></select></div>
+     <div><label for="rfloor">바닥</label><select id="rfloor"><option value="oak">오크 마루</option><option value="white">밝은 타일</option><option value="gray">그레이 타일</option><option value="walnut">월넛 마루</option></select></div>
+    </div>
+    <label for="rwall">벽 색</label>
+    <select id="rwall"><option value="#EFEAE2">웜 화이트</option><option value="#E3DED6">라이트 베이지</option><option value="#CFCBC4">라이트 그레이</option><option value="#9AA39A">세이지 그린</option><option value="#3E3B37">다크 차콜</option></select>
+    <label for="fplan">평면도 사진 (선택)</label>
+    <input id="fplan" type="file" accept="image/*">
+    <p class="hint">바닥 면적, 벽 면적(문·창 제외 대략), 둘레가 계산되어 시안 신청서에 함께 들어갑니다.</p>
+    <p class="hint" id="calc"></p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 3. 스타일 + 시안 신청 -->
+<section id="style">
+ <div class="wrap">
+  <p class="eyebrow">03 · 스타일 고르기 · 디자인 시안 신청</p>
+  <h2>원하는 분위기를 고르고, 시안을 받아 보세요</h2>
+  <p class="sub">스타일을 누르면 올린 사진에 그 색감이 살짝 입혀집니다(색감 미리보기이며 실제 시안은 아닙니다). 신청하시면 더빌드탑이 고객님 사진과 스타일로 디자인 시안을 만들어 보내드립니다.</p>
+  <div class="grid2">
+   <div>
+    <div class="prev" id="prev"><span id="prev-msg">사진을 올리면 색감 미리보기가 나타납니다</span><img id="prev-img" alt="색감 미리보기" hidden><div class="wash" id="wash"></div></div>
+    <div class="upl"><label class="btn line" for="f-prev">공간 사진 올리기</label><input class="vis" type="file" id="f-prev" accept="image/*"></div>
+    <label>스타일</label>
+    <div class="styles" id="styles"></div>
+   </div>
+   <form class="card" id="req" novalidate>
+    <h3>디자인 시안 신청서</h3>
+    <label>공간 (여러 개 선택)</label>
+    <div class="chips" id="spaces"></div>
+    <div class="row" style="grid-template-columns:1fr 1fr">
+     <div><label for="kind">건물 종류</label><select id="kind"><option>아파트</option><option>주택·빌라</option><option>식당·카페</option><option>매장·사무실</option><option>옥상·외부</option></select></div>
+     <div><label for="size">면적 (평)</label><input id="size" type="number" min="1" placeholder="예: 32"></div>
+    </div>
+    <div class="row" style="grid-template-columns:1fr 1fr">
+     <div><label for="when">희망 착공 시기</label><select id="when"><option>1개월 이내</option><option>1~3개월</option><option>3개월 이후</option><option>미정</option></select></div>
+     <div><label for="svc">신청 항목</label><select id="svc"></select></div>
+    </div>
+    <label for="memo">꼭 바꾸고 싶은 곳 · 요청 사항</label>
+    <textarea id="memo" placeholder="예: 주방 상판 교체, 거실 간접조명, 아이 방 수납"></textarea>
+    <div class="row" style="grid-template-columns:1fr 1fr">
+     <div><label for="nm">성함</label><input id="nm" autocomplete="name" required></div>
+     <div><label for="ph">연락처</label><input id="ph" type="tel" autocomplete="tel" placeholder="010-" required></div>
+    </div>
+    <label style="font-weight:400;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="agree" style="width:auto;margin-top:5px"> 상담을 위해 성함·연락처를 더빌드탑에 전달하는 데 동의합니다. (상담 외 용도로 쓰지 않습니다)</label>
+    <div class="upl" style="margin-top:18px">
+     <button class="btn" type="submit">문자로 신청 보내기</button>
+     <button class="btn line" type="button" id="copy-req">신청 내용 복사</button>
+    </div>
+    <p class="hint">문자 앱이 열리면 공간 사진·평면도를 첨부해서 보내 주세요. 카카오톡으로 보내실 때는 '신청 내용 복사'를 누른 뒤 붙여 넣으시면 됩니다.</p>
+    <div class="sum" id="sum" hidden></div>
+   </form>
+  </div>
+ </div>
+</section>
+
+<!-- 4. 결제 -->
+<section id="pay">
+ <div class="wrap">
+  <p class="eyebrow">04 · 결제 안내</p>
+  <h2>결제는 더빌드탑으로 직접</h2>
+  <p class="sub">상담 후 안내드린 금액을 아래 방법으로 결제해 주세요. 결제하신 뒤 성함과 결제 시각을 문자로 알려 주시면 확인 후 바로 작업을 시작합니다.</p>
+  <div class="plans" id="plans"></div>
+  <div class="grid2 pay">
+   <div class="card" id="bank-card">
+    <h3>계좌이체</h3>
+    <div id="bank-box"></div>
+    <p class="hint">입금자명은 신청서의 성함과 같게 해 주세요.</p>
+   </div>
+   <div class="card" id="card-card">
+    <h3>카드 · 간편결제</h3>
+    <div id="card-box"></div>
+   </div>
+  </div>
+  <p class="note">결제 전 꼭 확인하세요 — 금액과 작업 범위는 상담에서 정한 내용을 기준으로 하며, 작업 시작 전에는 전액 환불해 드립니다. 자세한 환불 기준은 상담 때 서면으로 안내드립니다.</p>
+ </div>
+</section>
+</main>
+
+<footer>
+ <div class="wrap">
+  <p><b>더빌드탑</b> · 대표 김종현 · 상담 <a href="tel:01054679349">010-5467-9349</a> · <a href="index.html">thebuildtop.github.io</a></p>
+  <p id="biz"></p>
+ </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* =========================================================
+   ▶ 대표님이 직접 고치는 곳 (여기만 바꾸면 홈페이지에 반영됩니다)
+   - 빈칸("")으로 두면 그 부분은 화면에 나오지 않고 "상담 후 안내"로 표시됩니다.
+   ========================================================= */
+var SHOP = {
+  phone: "010-5467-9349",
+  bank:   { name: "카카오뱅크", account: "3333-37-7804214", holder: "김종현 (더빌드탑)" },   // 예: { name:"OO은행", account:"000-0000-0000-00", holder:"김종현(더빌드탑)" }
+  cardPayLink: "",                                  // 토스페이먼츠 등에서 받은 결제 링크 주소 (https://...)
+  bizInfo: "",                                      // 예: "사업자등록번호 000-00-00000 · 부산광역시 ..."
+  products: [                                       // 판매 항목. price 는 비워 두면 "상담 후 안내"
+    { name: "디자인 시안", desc: ["고객 사진 + 선택 스타일로 시안 이미지", "수정 1회 포함"], price: "" },
+    { name: "3D 통합 제안서", desc: ["3D 공간 모형 + 항목별 견적", "공정표·준공·A/S 안내 포함"], price: "" },
+    { name: "공사 계약금", desc: ["계약서 작성 후 결제", "공정별 사진 기록 제공"], price: "" }
+  ]
+};
+</script>
+<script>
+(function(){
+var $ = function(id){ return document.getElementById(id); };
+function toast(t){ var el=$("toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(function(){el.classList.remove("on");},1800); }
+function copy(t){ (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){toast("복사했습니다");},function(){
+  var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");toast("복사했습니다");}catch(e){toast("복사가 안 되면 길게 눌러 복사해 주세요");} ta.remove(); }); }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function loadImg(input, img, cb){ input.addEventListener("change", function(){ var f=input.files&&input.files[0]; if(!f) return; var u=URL.createObjectURL(f); img.onload=function(){ if(cb) cb(u); }; img.src=u; img.hidden=false; }); }
+
+/* Before/After */
+document.querySelectorAll(".ba").forEach(function(ba){ var r=ba.querySelector("input[type=range]"); r.addEventListener("input",function(){ ba.style.setProperty("--pos", r.value+"%"); }); });
+loadImg($("f-before"), $("u-before")); loadImg($("f-after"), $("u-after"));
+
+/* Styles */
+var STYLES = [
+ {k:"모던 화이트", d:"밝은 벽·무광 화이트·실버", c:["#F4F2EE","#DCDAD6","#9C9A96"], wash:"rgba(235,240,245,.55)"},
+ {k:"내추럴 오크", d:"오크 마루·베이지·린넨", c:["#E9DFCF","#C29A6A","#8A6A48"], wash:"rgba(214,170,110,.45)"},
+ {k:"호텔 다크", d:"월넛·스톤·황동 포인트", c:["#3A332D","#6E5A45","#C3A063"], wash:"rgba(60,45,30,.6)"},
+ {k:"미니멀 그레이", d:"그레이 타일·블랙 라인", c:["#D5D4D1","#8E8D8A","#2E2E2E"], wash:"rgba(130,135,140,.5)"},
+ {k:"웜 코지", d:"테라코타·크림·원목", c:["#F1E6D6","#C98A62","#7E5C43"], wash:"rgba(205,130,90,.45)"},
+ {k:"상업 공간 모던", d:"노출 천장·조명 강조", c:["#2B2A28","#7D7A74","#E2B66A"], wash:"rgba(226,182,106,.4)"}
+];
+var picked = STYLES[1].k;
+var box=$("styles");
+STYLES.forEach(function(s){
+  var b=document.createElement("button"); b.type="button"; b.className="style"; b.setAttribute("aria-pressed", s.k===picked);
+  b.innerHTML='<div class="sw">'+s.c.map(function(c){return '<i style="background:'+c+'"></i>';}).join("")+'</div><div class="t"><b>'+esc(s.k)+'</b><span>'+esc(s.d)+'</span></div>';
+  b.onclick=function(){ picked=s.k; box.querySelectorAll(".style").forEach(function(x){x.setAttribute("aria-pressed","false");}); b.setAttribute("aria-pressed","true"); $("wash").style.background=s.wash; };
+  box.appendChild(b);
+});
+$("wash").style.background=STYLES[1].wash;
+loadImg($("f-prev"), $("prev-img"), function(){ $("prev-msg").hidden=true; });
+
+/* Spaces chips */
+var SPACES=["거실","주방","욕실","침실","현관","발코니","전체","외관·간판","옥상·지붕"], chosen={};
+SPACES.forEach(function(s){ var c=document.createElement("button"); c.type="button"; c.className="chip"; c.textContent=s; c.setAttribute("aria-pressed","false");
+  c.onclick=function(){ chosen[s]=!chosen[s]; c.setAttribute("aria-pressed", chosen[s]); }; $("spaces").appendChild(c); });
+
+/* Products & payment */
+var svc=$("svc");
+SHOP.products.forEach(function(p){ var o=document.createElement("option"); o.textContent=p.name; svc.appendChild(o); });
+var o2=document.createElement("option"); o2.textContent="상담만 먼저"; svc.appendChild(o2);
+$("plans").innerHTML = SHOP.products.map(function(p){
+  return '<div class="card plan"><h3>'+esc(p.name)+'</h3><ul>'+p.desc.map(function(d){return "<li>"+esc(d)+"</li>";}).join("")+'</ul><p class="price">'+(p.price?esc(p.price):"상담 후 안내")+'</p></div>';
+}).join("");
+var bk=SHOP.bank;
+if(bk.account){
+  $("bank-box").innerHTML='<div class="acct"><div><span class="hint" style="margin:0">'+esc(bk.name)+' · 예금주 '+esc(bk.holder)+'</span><br><b>'+esc(bk.account)+'</b></div><button class="btn line" type="button" id="cp-acct">계좌 복사</button></div>';
+  $("cp-acct").onclick=function(){ copy(bk.name+" "+bk.account+" "+bk.holder); };
+} else {
+  $("bank-box").innerHTML='<p class="sub" style="margin-top:10px">입금 계좌는 상담 후 문자로 안내드립니다.</p><a class="btn line" style="margin-top:14px" href="sms:'+SHOP.phone.replace(/-/g,"")+'">계좌 안내 요청</a>';
+}
+if(SHOP.cardPayLink){
+  $("card-box").innerHTML='<p class="sub" style="margin-top:10px">카드, 간편결제로 결제할 수 있는 안전한 결제 화면으로 이동합니다.</p><a class="btn" style="margin-top:14px" target="_blank" rel="noopener" href="'+esc(SHOP.cardPayLink)+'">카드로 결제하기</a>';
+} else {
+  $("card-box").innerHTML='<p class="sub" style="margin-top:10px">카드 결제가 필요하시면 결제 링크를 문자로 보내드립니다.</p><a class="btn line" style="margin-top:14px" href="sms:'+SHOP.phone.replace(/-/g,"")+'">카드 결제 링크 요청</a>';
+}
+if(SHOP.bizInfo) $("biz").textContent=SHOP.bizInfo;
+
+/* Request */
+function buildReq(){
+  var sp=Object.keys(chosen).filter(function(k){return chosen[k];});
+  var t="[더빌드탑 디자인 시안 신청]\n"+
+   "신청 항목: "+svc.value+"\n스타일: "+picked+"\n공간: "+(sp.join(", ")||"미선택")+"\n"+
+   "건물: "+$("kind").value+(($("size").value)?" / "+$("size").value+"평":"")+"\n희망 착공: "+$("when").value+"\n"+
+   "3D 치수: "+($("calc").dataset.txt||"-")+"\n"+
+   "요청 사항: "+($("memo").value.trim()||"-")+"\n"+
+   "성함: "+$("nm").value.trim()+"\n연락처: "+$("ph").value.trim()+"\n(공간 사진을 함께 첨부합니다)";
+  return t;
+}
+function check(){
+  if(!$("nm").value.trim()||!$("ph").value.trim()){ toast("성함과 연락처를 적어 주세요"); return false; }
+  if(!$("agree").checked){ toast("개인정보 전달에 동의해 주세요"); return false; }
+  return true;
+}
+$("req").addEventListener("submit",function(e){ e.preventDefault(); if(!check()) return; var t=buildReq(); $("sum").textContent=t; $("sum").hidden=false;
+  var sep=/iPhone|iPad|iPod/.test(navigator.userAgent)?"&":"?"; location.href="sms:"+SHOP.phone.replace(/-/g,"")+sep+"body="+encodeURIComponent(t); });
+$("copy-req").onclick=function(){ if(!check()) return; var t=buildReq(); $("sum").textContent=t; $("sum").hidden=false; copy(t); };
+
+/* 3D room */
+var host=$("v3d");
+if(!window.THREE){ host.insertAdjacentHTML("beforeend",'<p style="color:#B9B2A6;padding:20px">3D 화면을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.</p>'); return; }
+var scene=new THREE.Scene(); scene.background=new THREE.Color(0x24221F);
+var cam=new THREE.PerspectiveCamera(45,4/3,0.1,200);
+var ren=new THREE.WebGLRenderer({antialias:true}); ren.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); host.appendChild(ren.domElement);
+scene.add(new THREE.HemisphereLight(0xffffff,0x6b5a45,0.85));
+var sun=new THREE.DirectionalLight(0xffffff,0.55); sun.position.set(5,10,7); scene.add(sun);
+var room=new THREE.Group(); scene.add(room);
+var planTex=null;
+var FLOORS={oak:0xC29A6A,white:0xE8E4DD,gray:0x8E8D8A,walnut:0x6E5A45};
+var orbit={th:-0.7,ph:0.95,r:9};
+function n(id,min,max){ var v=parseFloat($(id).value); if(isNaN(v)) v=min; return Math.max(min,Math.min(max,v)); }
+function build(){
+  while(room.children.length){ var c=room.children.pop(); if(c.geometry) c.geometry.dispose(); }
+  var W=n("rw",1,30), D=n("rd",1,30), H=n("rh",2,6), doors=+$("rdoor").value, wins=+$("rwin").value;
+  var fm=new THREE.MeshLambertMaterial({color: planTex?0xffffff:FLOORS[$("rfloor").value], map: planTex||null});
+  var floor=new THREE.Mesh(new THREE.PlaneGeometry(W,D),fm); floor.rotation.x=-Math.PI/2; room.add(floor);
+  var wm=new THREE.MeshLambertMaterial({color:new THREE.Color($("rwall").value),side:THREE.DoubleSide});
+  var t=0.12, edge=new THREE.LineBasicMaterial({color:0xC9A468});
+  function wall(len,x,z,rot){ var g=new THREE.BoxGeometry(len,H,t); var m=new THREE.Mesh(g,wm); m.position.set(x,H/2,z); m.rotation.y=rot; room.add(m);
+    var e=new THREE.LineSegments(new THREE.EdgesGeometry(g),edge); e.position.copy(m.position); e.rotation.y=rot; room.add(e); }
+  // 앞쪽(카메라 쪽) 두 벽은 낮게 보여 안이 들여다보이게: 뒤·왼쪽 벽만 전체 높이
+  wall(W,0,-D/2,0); wall(D,-W/2,0,Math.PI/2);
+  var low=new THREE.MeshLambertMaterial({color:new THREE.Color($("rwall").value)});
+  [[W,0,D/2,0],[D,W/2,0,Math.PI/2]].forEach(function(a){ var g=new THREE.BoxGeometry(a[0],0.3,t); var m=new THREE.Mesh(g,low); m.position.set(a[1],0.15,a[2]); m.rotation.y=a[3]; room.add(m); });
+  // 창 (뒤쪽 벽)
+  var gm=new THREE.MeshBasicMaterial({color:0xBFD6E6}); var ww=Math.min(1.8,W/(wins+1)*0.8);
+  for(var i=0;i<wins;i++){ var g=new THREE.Mesh(new THREE.PlaneGeometry(ww,Math.min(1.3,H-1.1)),gm); g.position.set(-W/2+W*(i+1)/(wins+1),0.9+Math.min(1.3,H-1.1)/2,-D/2+t/2+0.01); room.add(g); }
+  // 문 (왼쪽 벽)
+  var dm=new THREE.MeshLambertMaterial({color:0x8A6A48});
+  for(var j=0;j<doors;j++){ var d=new THREE.Mesh(new THREE.PlaneGeometry(0.9,Math.min(2.1,H-0.1)),dm); d.rotation.y=Math.PI/2; d.position.set(-W/2+t/2+0.01,Math.min(2.1,H-0.1)/2,-D/2+D*(j+1)/(doors+1)); room.add(d); }
+  var area=W*D, perim=2*(W+D), wallA=perim*H-doors*0.9*2.1-wins*ww*Math.min(1.3,H-1.1);
+  var py=area/3.3058;
+  $("area").textContent=area.toFixed(1)+"㎡ · 약 "+py.toFixed(1)+"평";
+  var txt="가로 "+W+"m × 세로 "+D+"m × 천장 "+H+"m / 바닥 "+area.toFixed(1)+"㎡(약 "+py.toFixed(1)+"평) / 벽 약 "+Math.max(0,wallA).toFixed(1)+"㎡ / 둘레 "+perim.toFixed(1)+"m / 문 "+doors+" · 창 "+wins;
+  $("calc").textContent=txt; $("calc").dataset.txt=txt;
+  orbit.r=Math.max(W,D)*1.9+2; place(); draw();
+}
+function place(){ var r=orbit.r; cam.position.set(r*Math.sin(orbit.ph)*Math.sin(orbit.th), r*Math.cos(orbit.ph), r*Math.sin(orbit.ph)*Math.cos(orbit.th)); cam.lookAt(0,0.6,0); }
+function size(){ var w=host.clientWidth, h=host.clientHeight; ren.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); draw(); }
+function draw(){ ren.render(scene,cam); }
+["rw","rd","rh","rdoor","rwin","rfloor","rwall"].forEach(function(id){ $(id).addEventListener("input",build); $(id).addEventListener("change",build); });
+$("fplan").addEventListener("change",function(){ var f=this.files&&this.files[0]; if(!f) return; new THREE.TextureLoader().load(URL.createObjectURL(f),function(tx){ planTex=tx; build(); }); });
+document.querySelectorAll("[data-view]").forEach(function(b){ b.onclick=function(){ var v=b.dataset.view; if(v==="top"){orbit.th=0;orbit.ph=0.02;} else if(v==="front"){orbit.th=0;orbit.ph=1.25;} else {orbit.th=-0.7;orbit.ph=0.95;} place(); draw(); }; });
+var pts={}, last=null;
+host.addEventListener("pointerdown",function(e){ host.setPointerCapture(e.pointerId); pts[e.pointerId]={x:e.clientX,y:e.clientY}; last=null; });
+host.addEventListener("pointermove",function(e){ if(!pts[e.pointerId]) return; var p=pts[e.pointerId], ids=Object.keys(pts);
+  if(ids.length===1){ orbit.th-=(e.clientX-p.x)*0.008; orbit.ph=Math.max(0.02,Math.min(1.5,orbit.ph-(e.clientY-p.y)*0.008)); }
+  pts[e.pointerId]={x:e.clientX,y:e.clientY};
+  if(ids.length===2){ var a=pts[ids[0]], b=pts[ids[1]], d=Math.hypot(a.x-b.x,a.y-b.y); if(last) orbit.r=Math.max(3,Math.min(60,orbit.r*last/d)); last=d; }
+  place(); draw(); });
+function up(e){ delete pts[e.pointerId]; last=null; }
+host.addEventListener("pointerup",up); host.addEventListener("pointercancel",up);
+host.addEventListener("wheel",function(e){ e.preventDefault(); orbit.r=Math.max(3,Math.min(60,orbit.r*(e.deltaY>0?1.1:0.9))); place(); draw(); },{passive:false});
+window.addEventListener("resize",size);
+build(); size();
+})();
+</script>
+</body>
+</html>
