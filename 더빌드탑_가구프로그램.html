@@ -16,6 +16,7 @@ header .acts{margin-left:auto;display:flex;flex-wrap:wrap;gap:6px}
 .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 12px;border-radius:6px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--brass)}
 header .btn{background:#2C2A27;color:#F6F2EB;border-color:#4A463F}
+header .btn.kakao{background:#FEE500;border-color:#FEE500;color:#191919;font-weight:800}
 header .btn.main{background:var(--brass);border-color:var(--brass);color:#1F1E1C;font-weight:700}
 .wrap{display:grid;grid-template-columns:minmax(320px,430px) 1fr;gap:14px;padding:14px 16px;align-items:start}
 @media(max-width:900px){.wrap{grid-template-columns:1fr}}
@@ -76,9 +77,11 @@ tr.grp td{background:#FBF8F2;font-weight:700;color:var(--brass)}
 <header>
   <div class="logo">더빌드탑 가구 설계<span>설계 · 부재 리스트 · 원장 재단도</span></div>
   <div class="acts">
+    <button class="btn kakao" onclick="shareKakao()">카톡으로 보내기</button>
     <button class="btn main" onclick="exportXLSX()">엑셀 저장</button>
+    <button class="btn main" onclick="exportPDF()">PDF 저장</button>
     <button class="btn main" onclick="exportDAE()">스케치업 파일(.dae)</button>
-    <button class="btn main" onclick="doPrint()">인쇄 · PDF</button>
+    <button class="btn" onclick="doPrint()">인쇄</button>
     <button class="btn" onclick="saveProject()">프로젝트 저장</button>
     <button class="btn" onclick="document.getElementById('fload').click()">불러오기</button>
     <button class="btn" onclick="newProject()">새로 만들기</button>
@@ -457,7 +460,8 @@ function sheetXML(rows,widths){
  rows.forEach((r,ri)=>{x+=`<row r="${ri+1}">`;r.forEach((v,ci)=>{if(v===''||v==null)return;const ref=colName(ci)+(ri+1),s=ri===0?' s="1"':'';
   x+=typeof v==='number'?`<c r="${ref}"${s}><v>${v}</v></c>`:`<c r="${ref}" t="inlineStr"${s}><is><t xml:space="preserve">${xe(v)}</t></is></c>`});x+='</row>'});
  return x+'</sheetData></worksheet>'}
-function exportXLSX(){
+function exportXLSX(){dl(fname('xlsx'),xlsxBlob())}
+function xlsxBlob(){
  const S=ST.set,pj=ST.project;
  const s1=[['No','가구','부재명','자재','길이(mm)','폭(mm)','두께(mm)','수량','엣지','엣지길이(m)','결 고정']];
  CUR.rows.forEach((r,i)=>s1.push([i+1,r.cab,r.name,matName(r.mat),r.L,r.W,r.T,r.q,edgeTxt(r),+(edgeLen(r)*r.q/1000).toFixed(2),r.grain&&S.grain?'고정':'']));
@@ -480,11 +484,12 @@ function exportXLSX(){
   ['xl/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="맑은 고딕"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="맑은 고딕"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1F1E1C"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'],
   ...SH.map((s,i)=>[`xl/worksheets/sheet${i+1}.xml`,sheetXML(s[1],s[2])])
  ];
- dl(fname('xlsx'),zip(files));
+ return zip(files);
 }
 
 /* --- 스케치업용 COLLADA (.dae) --- */
-function exportDAE(){
+function exportDAE(){dl(fname('dae'),daeBlob())}
+function daeBlob(){
  const mats={body:'몸통',door:'문',back:'뒷판',box:'서랍',kick:'걸레받이'};
  const rgb=h=>{const n=parseInt(h.slice(1),16);return [(n>>16)/255,((n>>8)&255)/255,(n&255)/255].map(v=>v.toFixed(3)).join(' ')};
  let geo='',nodes='';
@@ -504,10 +509,114 @@ function exportDAE(){
 <library_visual_scenes><visual_scene id="s" name="${xe(ST.project.name||'가구')}">${nodes}</visual_scene></library_visual_scenes>
 <scene><instance_visual_scene url="#s"/></scene>
 </COLLADA>`;
- dl(fname('dae'),new Blob([dae],{type:'model/vnd.collada+xml'}));
+ return new Blob([dae],{type:'model/vnd.collada+xml'});
 }
 
-/* --- 인쇄 / PDF --- */
+
+/* --- PDF 직접 만들기 (A4 가로) --- */
+const PW=1754,PH=1240,PM=70,PTOP=PM+145;
+function pgNew(title,right){const c=document.createElement('canvas');c.width=PW;c.height=PH;const x=c.getContext('2d');
+ x.fillStyle='#fff';x.fillRect(0,0,PW,PH);x.textBaseline='middle';const pj=ST.project;
+ x.strokeStyle='#1F1E1C';x.lineWidth=2;x.strokeRect(PM,PM,PW-2*PM,56);
+ x.fillStyle='#1F1E1C';x.font='bold 26px sans-serif';x.fillText('더빌드탑 가구 설계',PM+16,PM+28);
+ x.font='21px sans-serif';x.textAlign='right';
+ x.fillText(`현장: ${pj.name||'-'}${pj.client?'  ·  고객: '+pj.client:''}   |   작성일 ${pj.date||''}   |   상담 010-5467-9349`,PW-PM-16,PM+28);
+ x.textAlign='left';x.font='bold 30px sans-serif';x.fillText(title,PM,PM+100);
+ x.textAlign='right';x.font='22px sans-serif';x.fillStyle='#6B655C';x.fillText(right||'',PW-PM,PM+100);x.textAlign='left';
+ x.fillStyle='#1F1E1C';x.fillRect(PM,PM+122,PW-2*PM,3);return {c,x};}
+function pgTable(pages,title,right,cols,rows,startPage,startY,rowH){
+ rowH=rowH||30;const tw=PW-2*PM,ws=cols.map(c=>c.w),sw=ws.reduce((a,b)=>a+b,0);cols=cols.map(c=>({...c,w:c.w/sw*tw}));
+ let pg=startPage,y=startY,i=0;
+ const head=()=>{const x=pg.x;let xx=PM;x.fillStyle='#F2EEE6';x.fillRect(PM,y,tw,rowH);x.fillStyle='#1F1E1C';x.font='bold 19px sans-serif';
+  cols.forEach(c=>{x.textAlign=c.r?'right':'left';x.fillText(c.t,c.r?xx+c.w-8:xx+8,y+rowH/2);xx+=c.w});x.textAlign='left';y+=rowH};
+ if(!pg){pg=pgNew(title,right);pages.push(pg);y=PTOP}
+ head();
+ for(;i<rows.length;i++){
+  if(y+rowH>PH-PM){pg=pgNew(title+' (이어서)',right);pages.push(pg);y=PTOP;head()}
+  const x=pg.x,r=rows[i];
+  if(r.grp){x.fillStyle='#FBF8F2';x.fillRect(PM,y,tw,rowH);x.fillStyle='#8A6A3A';x.font='bold 19px sans-serif';x.fillText(r.grp,PM+8,y+rowH/2)}
+  else{let xx=PM;x.fillStyle='#1F1E1C';x.font='18px sans-serif';
+   r.forEach((v,k)=>{const c=cols[k];x.textAlign=c.r?'right':'left';let t=String(v);
+    while(t.length>1&&x.measureText(t).width>c.w-12)t=t.slice(0,-1);
+    x.fillText(t,c.r?xx+c.w-8:xx+8,y+rowH/2);xx+=c.w});x.textAlign='left'}
+  x.strokeStyle='#E2DCD1';x.lineWidth=1;x.beginPath();x.moveTo(PM,y+rowH);x.lineTo(PW-PM,y+rowH);x.stroke();y+=rowH;
+ }
+ return {pg,y};
+}
+function buildPdfPages(){
+ const pages=[],S=ST.set;
+ const p1=pgNew('1. 가구 구성 · 3D',`가구 ${ST.cabs.length}개 · 부재 ${CUR.P.length}개`);pages.push(p1);
+ const off=document.createElement('canvas');off.width=PW-2*PM;off.height=560;
+ render3D(off,CUR.P,{yaw:-0.6,pitch:0.42,zoom:1.25,px:0,py:0},false);
+ p1.x.drawImage(off,PM,PTOP);
+ const nest=Object.values(CUR.N).map(g=>`${matName(g.mat)} ${g.T}T ${g.sheets.length}장(${g.sheets.length?(g.sheets.reduce((a,s)=>a+s.use,0)/g.sheets.length*100).toFixed(0):0}%)`).join('   ·   ');
+ p1.x.font='bold 21px sans-serif';p1.x.fillStyle='#1F1E1C';
+ p1.x.fillText(`원장: ${nest}   ·   엣지 합계 ${(CUR.P.reduce((a,p)=>a+edgeLen(p),0)/1000).toFixed(1)} m`,PM,PTOP+585);
+ const cc=[{t:'No',w:5},{t:'가구명',w:18},{t:'종류',w:12},{t:'폭',w:8,r:1},{t:'높이',w:8,r:1},{t:'깊이',w:8,r:1},{t:'설치높이',w:10,r:1},{t:'문',w:6,r:1},{t:'서랍',w:6,r:1},{t:'선반',w:6,r:1},{t:'걸레받이',w:9}];
+ pgTable(pages,'1. 가구 구성 · 3D','',cc,ST.cabs.map((c,i)=>[i+1,c.name,c.type,c.w,c.h,c.d,c.elev,c.doors,c.drawers,c.shelves,c.kick?'있음':'-']),p1,PTOP+615,30);
+ const lc=[{t:'No',w:5},{t:'부재명',w:16},{t:'자재',w:20},{t:'길이',w:8,r:1},{t:'폭',w:8,r:1},{t:'두께',w:7,r:1},{t:'수량',w:7,r:1},{t:'엣지',w:11},{t:'엣지(m)',w:9,r:1},{t:'결',w:6}];
+ const rows=[];let last='',no=0;
+ CUR.rows.forEach(r=>{if(r.cabId!==last){last=r.cabId;rows.push({grp:r.cab})}
+  rows.push([++no,r.name,matName(r.mat),r.L,r.W,r.T,r.q,edgeTxt(r),(edgeLen(r)*r.q/1000).toFixed(2),r.grain&&S.grain?'고정':'-'])});
+ pgTable(pages,'2. 부재 리스트',`몸통 ${S.tb}T · 문 ${S.td}T · 뒷판 ${S.tk}T`,lc,rows,null,0,30);
+ Object.values(CUR.N).forEach(g=>g.sheets.forEach((sh,i)=>{
+  const p=pgNew(`3. 원장 재단도 — ${matName(g.mat)} ${g.T}T (${i+1}/${g.sheets.length})`,`${S.sheetL}×${S.sheetW} · 톱날 ${S.kerf} · 사용률 ${(sh.use*100).toFixed(0)}%`);pages.push(p);
+  const x=p.x,aw=PW-2*PM,ah=PH-PTOP-PM-30,k=Math.min(aw/S.sheetL,ah/S.sheetW),ox=PM+(aw-S.sheetL*k)/2,oy=PTOP+20;
+  x.fillStyle='#fff';x.strokeStyle='#1F1E1C';x.lineWidth=3;x.strokeRect(ox,oy,S.sheetL*k,S.sheetW*k);
+  x.setLineDash([10,8]);x.strokeStyle='#bbb';x.lineWidth=1;x.strokeRect(ox+S.trim*k,oy+S.trim*k,(S.sheetL-2*S.trim)*k,(S.sheetW-2*S.trim)*k);x.setLineDash([]);
+  const fill={body:'#F1EBDF',door:'#E6D3BC',back:'#E9E4DA'}[g.mat];x.textAlign='center';
+  sh.placed.forEach(q=>{const rx=ox+q.x*k,ry=oy+q.y*k,rw=q.w*k,rh=q.h*k;
+   x.fillStyle=fill;x.fillRect(rx,ry,rw,rh);x.strokeStyle='#6B5230';x.lineWidth=2;x.strokeRect(rx,ry,rw,rh);
+   const len=q.r?q.p.W:q.p.L,wid=q.r?q.p.L:q.p.W,fs=Math.max(13,Math.min(24,Math.min(rw,rh)/4));
+   x.fillStyle='#1F1E1C';x.font=`${fs}px sans-serif`;
+   if(rw>70&&rh>36){x.fillText(`${q.p.cab} ${q.p.name}`,rx+rw/2,ry+rh/2-fs*.6,rw-6);x.fillStyle='#6B5230';x.font=`bold ${fs}px sans-serif`;x.fillText(`${len}×${wid}${q.r?' (회전)':''}`,rx+rw/2,ry+rh/2+fs*.7,rw-6)}
+   else x.fillText(`${len}×${wid}`,rx+rw/2,ry+rh/2,rw-4)});
+  x.textAlign='left';
+ }));
+ pages.forEach((p,i)=>{p.x.fillStyle='#6B655C';p.x.font='18px sans-serif';p.x.textAlign='right';p.x.fillText(`${i+1} / ${pages.length}`,PW-PM,PH-PM/2);p.x.textAlign='left'});
+ return pages.map(p=>p.c);
+}
+function canvasJpeg(c){return new Promise(r=>c.toBlob(b=>b.arrayBuffer().then(a=>r(new Uint8Array(a))),'image/jpeg',0.9))}
+async function pdfBlob(){
+ const pages=buildPdfPages(),enc=new TextEncoder(),chunks=[],offs=[];let off=0;
+ const push=u=>{chunks.push(u);off+=u.length},s=t=>push(enc.encode(t));
+ const obj=async(id,body)=>{offs[id]=off;s(`${id} 0 obj\n`);await body();s('\nendobj\n')};
+ s('%PDF-1.4\n');push(new Uint8Array([37,226,227,207,211,10]));
+ const n=pages.length,total=3+3*n;
+ await obj(1,()=>s('<< /Type /Catalog /Pages 2 0 R >>'));
+ await obj(2,()=>s(`<< /Type /Pages /Count ${n} /Kids [${pages.map((_,i)=>`${3+3*i} 0 R`).join(' ')}] >>`));
+ for(let i=0;i<n;i++){const id=3+3*i,jpg=await canvasJpeg(pages[i]),cs='q 842 0 0 595 0 0 cm /Im0 Do Q';
+  await obj(id,()=>s(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /XObject << /Im0 ${id+2} 0 R >> >> /Contents ${id+1} 0 R >>`));
+  await obj(id+1,()=>s(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`));
+  await obj(id+2,()=>{s(`<< /Type /XObject /Subtype /Image /Width ${PW} /Height ${PH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);push(jpg);s('\nendstream')});
+ }
+ const xref=off;s(`xref\n0 ${total}\n0000000000 65535 f \n`);
+ for(let i=1;i<total;i++)s(String(offs[i]).padStart(10,'0')+' 00000 n \n');
+ s(`trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+ return new Blob(chunks,{type:'application/pdf'});
+}
+async function exportPDF(){dl(fname('pdf'),await pdfBlob())}
+
+/* --- 카톡으로 보내기 (휴대폰 공유창 → 카카오톡 → 나와의 채팅) --- */
+async function shareKakao(){
+ const all=[new File([xlsxBlob()],fname('xlsx'),{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),
+  new File([await pdfBlob()],fname('pdf'),{type:'application/pdf'}),
+  new File([daeBlob()],fname('dae'),{type:'model/vnd.collada+xml'})];
+ const text=`[더빌드탑] ${ST.project.name||'가구'} — 엑셀 · PDF · 스케치업(.dae)`;
+ const can=fs=>{try{return !!(navigator.canShare&&navigator.canShare({files:fs}))}catch(e){return false}};
+ if(can(all)){try{await navigator.share({files:all,title:text,text});return}catch(e){if(e&&e.name==='AbortError')return}}
+ const pdfOnly=all.filter(f=>f.name.endsWith('.pdf'));
+ if(can(pdfOnly)){
+  all.filter(f=>!f.name.endsWith('.pdf')).forEach(f=>dl(f.name,f));
+  try{await navigator.share({files:pdfOnly,title:text,text});}catch(e){}
+  alert('이 휴대폰 브라우저는 엑셀·DAE 파일을 바로 공유하지 못해 PDF만 공유창으로 보냈습니다.\n엑셀·DAE는 휴대폰 "다운로드" 폴더에 저장됐으니, 카카오톡 나와의 채팅에서 + → 파일로 보내 주세요.');
+  return;
+ }
+ all.forEach((f,i)=>setTimeout(()=>dl(f.name,f),i*400));
+ alert('PC에서는 공유창이 없어 파일 3개(엑셀·PDF·DAE)를 내려받았습니다.\n카카오톡 PC의 "나와의 채팅" 창에 3개 파일을 끌어다 놓으면 휴대폰에서도 바로 볼 수 있습니다.');
+}
+
+/* --- 인쇄 --- */
 function buildPrint(){
  const pj=ST.project,S=ST.set;
  const off=document.createElement('canvas');off.width=1500;off.height=820;
