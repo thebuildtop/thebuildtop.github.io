@@ -121,11 +121,22 @@ tr.grp td{background:#FBF8F2;font-weight:700;color:var(--brass)}
       <label class="chk" style="margin-top:8px"><input type="checkbox" data-s="grain"> 나뭇결 방향 고정 (측판 · 문은 회전하지 않고 배치)</label>
     </div>
     <div class="card">
+      <h3>주방 브랜드 · 도어 마감 <small>(견적·도면 표기)</small></h3>
+      <div class="grid g2">
+        <label class="f">주방가구 브랜드<input list="dlBrand" data-b="name" placeholder="목록에서 고르거나 직접 입력"></label>
+        <label class="f">시리즈 · 라인<input list="dlSeries" data-b="series" placeholder="예: 유로, 키친바흐"></label>
+        <label class="f">도어 마감<select data-b="finish"></select></label>
+        <label class="f">몸통 자재 등급<select data-b="grade"><option>SE0</option><option>E0</option><option>E1</option></select></label>
+      </div>
+      <datalist id="dlBrand"></datalist><datalist id="dlSeries"></datalist><datalist id="dlSink"></datalist>
+      <p class="hint">브랜드·시리즈는 도면과 엑셀·PDF에 표기됩니다. 도어 마감을 바꾸면 "문 · 서랍앞판 자재명"이 같이 바뀝니다. 실제 시리즈·마감 가능 여부는 각 브랜드 대리점 카탈로그로 확인해 주세요.</p>
+    </div>
+    <div class="card">
       <h3>가구 목록 <small id="cabCount"></small></h3>
       <div id="cabs"></div>
       <div class="hint" style="margin-bottom:6px">가구 추가:</div>
       <div class="addrow" id="addrow"></div>
-      <p class="hint">폭·높이·깊이는 몸통 크기(문 두께 제외)입니다. 설치높이는 바닥에서 가구 밑면까지입니다. 하부장 계열은 왼쪽부터, 상부장은 따로 왼쪽부터 붙여서 배치되며 "띄움"으로 앞 가구와 간격을 줄 수 있습니다.</p>
+      <p class="hint">폭·높이·깊이는 몸통 크기(문 두께 제외)입니다. 설치높이는 바닥에서 가구 밑면까지입니다. 하부장 계열은 왼쪽부터, 상부장·후드장은 따로 왼쪽부터 붙여서 배치됩니다. 키큰장·냉장고장처럼 높은 가구는 위·아래 줄을 함께 차지합니다. "띄움"으로 앞 가구와 간격을 줄 수 있습니다. 회색·검은색 가전(인덕션·후드·냉장고·식기세척기)은 위치 확인용이며 재단 목록에는 들어가지 않습니다.</p>
     </div>
   </div>
 
@@ -161,15 +172,33 @@ tr.grp td{background:#FBF8F2;font-weight:700;color:var(--brass)}
 "use strict";
 const TYPES={
  '하부장':{w:800,h:720,d:560,elev:100,doors:2,drawers:0,shelves:1,kick:true},
- '싱크하부장':{w:900,h:720,d:560,elev:100,doors:2,drawers:0,shelves:0,kick:true},
+ '싱크하부장':{w:900,h:720,d:560,elev:100,doors:2,drawers:0,shelves:0,kick:true,sinkBrand:'백조씽크',sinkModel:'',sinkType:'사각 싱글',sinkMount:'언더',sinkW:850,sinkD:480},
  '서랍장':{w:600,h:720,d:560,elev:100,doors:0,drawers:3,shelves:0,kick:true},
  '상부장':{w:800,h:700,d:330,elev:1450,doors:2,drawers:0,shelves:2,kick:false},
  '키큰장':{w:600,h:2100,d:560,elev:100,doors:2,drawers:0,shelves:4,kick:true},
  '옷장':{w:900,h:2300,d:600,elev:0,doors:2,drawers:0,shelves:1,kick:false},
  '신발장':{w:900,h:1100,d:350,elev:100,doors:2,drawers:0,shelves:4,kick:true},
- '오픈선반장':{w:800,h:1800,d:350,elev:0,doors:0,drawers:0,shelves:4,kick:false}
+ '오픈선반장':{w:800,h:1800,d:350,elev:0,doors:0,drawers:0,shelves:4,kick:false},
+ '인덕션 2구':{w:600,h:720,d:560,elev:100,doors:0,drawers:2,shelves:0,kick:true,cutW:270,cutD:490},
+ '인덕션 3구':{w:600,h:720,d:560,elev:100,doors:0,drawers:2,shelves:0,kick:true,cutW:560,cutD:490},
+ '인덕션 5구':{w:900,h:720,d:560,elev:100,doors:0,drawers:2,shelves:0,kick:true,cutW:860,cutD:490},
+ '후드장':{w:600,h:700,d:330,elev:1450,doors:2,drawers:0,shelves:0,kick:false,gapH:300},
+ '냉장고장':{w:960,h:2300,d:650,elev:0,doors:2,drawers:0,shelves:0,kick:false,gapH:1850},
+ '식기세척기':{w:600,h:720,d:560,elev:100,doors:0,drawers:0,shelves:0,kick:true}
 };
-const COL={body:'#ECE6DA',door:'#9C7650',back:'#D2C8B6',box:'#DCD2C0',kick:'#4A4640'};
+const EXTRA=['gapH','cutW','cutD','sinkBrand','sinkModel','sinkType','sinkMount','sinkW','sinkD'];
+const BRANDS={'더빌드탑 자체 제작':[],'한샘':['유로','키친바흐'],'현대리바트':['리바트키친'],'에넥스':[],'예림':['예림 인테리어 키친'],'영림':[]};
+const FINISH=['PET','LPM(멜라민)','우레탄 도장','수성 도장','하이그로시','PP','ABS','PVC 필름(랩핑)','천연무늬목','HPL'];
+const SINK_BRANDS=['백조씽크','한샘','블랑코(BLANCO)','프랑케(FRANKE)'];
+const SINK_TYPES=['사각 싱글','엠보 사각','더블볼','원형'];
+const SINK_MOUNT=['언더','탑'];
+const SINK_SIZES=['780×450','850×480','900×480','980×480','1000×500'];
+function brandTxt(){const b=ST.set.brand||{};return `${[b.name,b.series].filter(Boolean).join(' ')||'-'} · 도어 ${b.finish||'-'} · 몸통 ${b.grade||'-'}`}
+function normalize(){
+ if(!ST.set.brand)ST.set.brand={name:'더빌드탑 자체 제작',series:'',finish:'PET',grade:'E0'};
+ ST.cabs.forEach(c=>{if(c.type==='싱크하부장'&&c.sinkW===undefined){const d=TYPES['싱크하부장'];['sinkBrand','sinkModel','sinkType','sinkMount','sinkW','sinkD'].forEach(k=>c[k]=d[k])}});
+}
+const COL={body:'#ECE6DA',door:'#9C7650',back:'#D2C8B6',box:'#DCD2C0',kick:'#4A4640',app:'#2E2E30',appl:'#C4C8CC',sink:'#9EA4AA'};
 const MATKEYS=['body','door','back'];
 let ST;
 function today(){const d=new Date();return d.toISOString().slice(0,10)}
@@ -178,43 +207,70 @@ function mkCab(type,name){return Object.assign({id:uid(),name:name||type,type,of
 function defaults(){
  return {project:{name:'샘플 주방',client:'',date:today(),memo:''},
   set:{tb:18,td:18,tk:9,sheetL:2440,sheetW:1220,kerf:4,trim:10,gap:3,drawerH:180,grain:true,
-   mat:{body:'PB 18T 백색 LPM',door:'MDF 18T 도장',back:'MDF 9T'}},
-  cabs:[mkCab('하부장','하부장 A'),mkCab('서랍장','서랍장 B'),mkCab('싱크하부장','싱크장 C'),
-        mkCab('상부장','상부장 D'),mkCab('상부장','상부장 E'),Object.assign(mkCab('상부장','상부장 F'),{w:900})]};
+   mat:{body:'PB 18T 백색 LPM',door:'PET 도어 18T',back:'MDF 9T'},brand:{name:'더빌드탑 자체 제작',series:'',finish:'PET',grade:'E0'}},
+  cabs:[mkCab('냉장고장','냉장고장'),Object.assign(mkCab('서랍장','서랍장 A'),{w:600}),mkCab('인덕션 3구','인덕션장 3구'),
+        mkCab('식기세척기','식기세척기 자리'),mkCab('싱크하부장','싱크장'),
+        Object.assign(mkCab('상부장','상부장 B'),{w:600}),mkCab('후드장','후드장'),mkCab('상부장','상부장 C'),Object.assign(mkCab('상부장','상부장 D'),{w:700})]};
 }
 try{ST=JSON.parse(localStorage.getItem('tbt_furn')||'null')}catch(e){ST=null}
 if(!ST||!ST.cabs)ST=defaults();
 function persist(){try{localStorage.setItem('tbt_furn',JSON.stringify(ST))}catch(e){}}
 
 /* ---------- 부재 생성 ---------- */
-function isUpper(c){return c.type==='상부장'}
+function isUpper(c){return c.type==='상부장'||c.type==='후드장'}
+function isTall(c){return !isUpper(c)&&(+c.elev)+(+c.h)>1400}
 function layout(){
  const cur={low:0,up:0};
- return ST.cabs.map(c=>{const r=isUpper(c)?'up':'low';const x=cur[r]+(+c.off||0);cur[r]=x+(+c.w);return x});
+ return ST.cabs.map(c=>{let x;const o=+c.off||0,w=+c.w;
+  if(isUpper(c)){x=cur.up+o;cur.up=x+w}
+  else if(isTall(c)){x=Math.max(cur.low,cur.up)+o;cur.low=cur.up=x+w}
+  else{x=cur.low+o;cur.low=x+w}
+  return x});
 }
+function isInd(c){return String(c.type).indexOf('인덕션')===0}
+function cabNote(c){const t=+ST.set.tb;
+ if(isInd(c))return `상판 인덕션 타공 ${c.cutW}×${c.cutD} (제품 설명서 치수 확인) · 서랍 뒤 환기 공간 확보`;
+ if(c.type==='후드장')return `아래 ${c.gapH} 후드 공간 · 중간판 덕트 타공 Ø150 (현장 확인)`;
+ if(c.type==='냉장고장')return `냉장고 공간 폭 ${c.w-2*t} × 높이 ${c.gapH} (냉장고보다 좌우·위 여유 확인)`;
+ if(c.type==='싱크하부장'&&c.sinkW!==undefined){const inner=c.w-2*t;return `씽크볼 ${c.sinkBrand||''}${c.sinkModel?' '+c.sinkModel:''} · ${c.sinkType} ${c.sinkW}×${c.sinkD} · ${c.sinkMount} 설치 — 상판 타공은 제품 타공 도면 확인`+(c.sinkW>inner?` ⚠ 씽크볼이 장 안쪽 폭(${inner})보다 커서 장 폭을 늘리거나 볼을 줄여야 합니다`:'')}
+ if(c.type==='식기세척기')return `식기세척기 공간 폭 ${c.w} × 높이 ${(+c.elev)+(+c.h)} (빌트인 기기 규격 확인) · 몸통 없음`;
+ return '';}
 function genParts(c,x0,S){
- const t=+S.tb,td=+S.td,tk=+S.tk,g=+S.gap,P=[];
+ const t=+S.tb,td=+S.td,tk=+S.tk,g=+S.gap,P=[],T=c.type;
  const W=+c.w,H=+c.h,D=+c.d,z0=+c.elev,nd=Math.max(0,c.drawers|0),ndr=Math.max(0,c.doors|0),ns=Math.max(0,c.shelves|0);
  const iw=W-2*t;
- const add=(name,mat,L,Wd,T,el,es,grain,box,kind)=>{
+ const add=(name,mat,L,Wd,Th,el,es,grain,box,kind,note)=>{
    L=Math.round(L);Wd=Math.round(Wd);
    if(!grain&&Wd>L){[L,Wd]=[Wd,L];[el,es]=[es,el]}
-   P.push({cab:c.name,cabId:c.id,name,mat,L,W:Wd,T,el,es,grain:!!grain,box,kind:kind||mat});
+   P.push({cab:c.name,cabId:c.id,name,mat,L,W:Wd,T:Th,el,es,grain:!!grain,box,kind:kind||mat,note:note||''});
  };
+ const app=(name,box,kind)=>P.push({cab:c.name,cabId:c.id,name,mat:'app',L:0,W:0,T:0,el:0,es:0,grain:false,box,kind:kind||'app',app:true,note:''});
+ const kick=()=>{if(c.kick&&z0>20)add('걸레받이','door',W,z0-5,t,1,0,false,[x0,D-60,0,x0+W,D-60+t,z0-5],'kick')};
+ if(T==='식기세척기'){
+   add('식기세척기 도어판','door',H-g,W-g,td,2,2,true,[x0+g/2,D,z0+g/2,x0+W-g/2,D+td,z0+H-g/2],'door','기기 도어에 부착');
+   kick();
+   app('식기세척기(참고)',[x0+5,20,0,x0+W-5,D,z0+H-25],'appl');
+   return P;
+ }
+ const open=(T==='냉장고장'||T==='후드장')?Math.max(0,Math.min(H-2*t-50,+c.gapH||0)):0;
+ const zs=z0+open,Hs=H-open;
  add('측판(좌)','body',H,D,t,1,0,true,[x0,0,z0,x0+t,D,z0+H]);
  add('측판(우)','body',H,D,t,1,0,true,[x0+W-t,0,z0,x0+W,D,z0+H]);
- add('지판','body',iw,D,t,1,0,false,[x0+t,0,z0,x0+W-t,D,z0+t]);
- add('천판','body',iw,D,t,1,0,false,[x0+t,0,z0+H-t,x0+W-t,D,z0+H]);
- add('뒷판','back',H-2*t,iw,tk,0,0,false,[x0+t,0,z0+t,x0+W-t,tk,z0+H-t]);
- // 앞면: 서랍(위) + 문(아래)
+ if(T==='후드장')add('중간판','body',iw,D,t,1,0,false,[x0+t,0,zs,x0+W-t,D,zs+t],'body','덕트 타공 Ø150');
+ else add(T==='냉장고장'?'지판(냉장고 위)':'지판','body',iw,D,t,1,0,false,[x0+t,0,zs,x0+W-t,D,zs+t]);
+ if(isInd(c)||T==='싱크하부장'){
+   add('앞띠','body',iw,100,t,1,0,false,[x0+t,D-100,zs+Hs-t,x0+W-t,D,zs+Hs],'body',isInd(c)?'인덕션 타공 위치 피해서':'씽크볼 위치 피해서');
+   add('뒷띠','body',iw,100,t,0,0,false,[x0+t,0,zs+Hs-t,x0+W-t,100,zs+Hs]);
+ } else add('천판','body',iw,D,t,1,0,false,[x0+t,0,zs+Hs-t,x0+W-t,D,zs+Hs]);
+ add('뒷판','back',Hs-2*t,iw,tk,0,0,false,[x0+t,0,zs+t,x0+W-t,tk,zs+Hs-t]);
  let fh=+S.drawerH||180;
- if(nd>0&&ndr===0)fh=(H-g-(nd-1)*g)/nd;
- let ztop=z0+H-g/2;
+ if(nd>0&&ndr===0)fh=(Hs-g-(nd-1)*g)/nd;
+ let ztop=zs+Hs-g/2;
  const fw=W-g;
  for(let i=0;i<nd;i++){
    const zb=ztop-fh;
    add('서랍앞판','door',fw,fh,td,2,2,true,[x0+g/2,D,zb,x0+g/2+fw,D+td,ztop]);
-   const bw=iw-26,bh=Math.max(80,fh-50),bd=Math.max(250,Math.floor((D-tk-30)/50)*50),bz=zb+20;
+   const bw=iw-26,bh=Math.max(80,Math.min(fh-50,250)),bd=Math.max(250,Math.floor((D-tk-30)/50)*50),bz=zb+20;
    const bx=x0+t+13;
    add('서랍 옆판(좌)','body',bd,bh,t,1,0,false,[bx,D-bd,bz,bx+t,D,bz+bh],'box');
    add('서랍 옆판(우)','body',bd,bh,t,1,0,false,[bx+bw-t,D-bd,bz,bx+bw,D,bz+bh],'box');
@@ -223,25 +279,29 @@ function genParts(c,x0,S){
    add('서랍 바닥','back',bw,bd,tk,0,0,false,[bx,D-bd,bz-tk,bx+bw,D,bz],'back');
    ztop=zb-g;
  }
- let shelfTop=z0+H-t;
+ let shelfTop=zs+Hs-t;
  if(nd>0&&ndr>0){
-   const zm=ztop+g/2-t; // 서랍 구역과 문 구역 사이 중간판
+   const zm=ztop+g/2-t;
    add('중간판','body',iw,D-tk,t,1,0,false,[x0+t,tk,zm,x0+W-t,D,zm+t]);
    shelfTop=zm;
  }
  if(ndr>0){
-   const zb=z0+g/2,dh=ztop-zb,dw=(W-g-(ndr-1)*g)/ndr;
+   const zb=zs+g/2,dh=ztop-zb,dw=(W-g-(ndr-1)*g)/ndr;
    if(dh>50)for(let i=0;i<ndr;i++){const x=x0+g/2+i*(dw+g);
      add(ndr===1?'문':`문(${i+1})`,'door',dh,dw,td,2,2,true,[x,D,zb,x+dw,D+td,zb+dh]);}
  }
  if(!(nd>0&&ndr===0)&&ns>0){
-   const zb=z0+t;
+   const zb=zs+t;
    for(let i=0;i<ns;i++){const z=zb+(shelfTop-zb)*(i+1)/(ns+1)-t/2;
      add('선반','body',iw-2,D-tk-20,t,1,0,false,[x0+t+1,tk,z,x0+W-t-1,D-20,z+t]);}
  }
- if(c.kick&&z0>20){
-   add('걸레받이','door',W,z0-5,t,1,0,false,[x0,D-60,0,x0+W,D-60+t,z0-5],'kick');
- }
+ kick();
+ if(isInd(c)){const cw=(+c.cutW||560)+30,cd=(+c.cutD||490)+30,cx=x0+W/2,cy=Math.min(D-cd/2-30,D/2+20);
+   app('인덕션(참고)',[cx-cw/2,cy-cd/2,zs+Hs,cx+cw/2,cy+cd/2,zs+Hs+6],'app');}
+ if(T==='후드장')app('후드(참고)',[x0+t+2,20,zs-170,x0+W-t-2,D,zs],'appl');
+ if(T==='싱크하부장'&&+c.sinkW>0){const sw=+c.sinkW,sd=+c.sinkD||450,cx=x0+W/2,cy=Math.max(sd/2+10,Math.min(D-sd/2-40,D/2+20));
+   app('씽크볼(참고)',[cx-sw/2,cy-sd/2,zs+Hs-200,cx+sw/2,cy+sd/2,zs+Hs+2],'sink');}
+ if(T==='냉장고장')app('냉장고(참고)',[x0+t+15,30,z0,x0+W-t-15,D+40,z0+open-25],'appl');
  return P;
 }
 function allParts(){const xs=layout();let P=[];ST.cabs.forEach((c,i)=>{P=P.concat(genParts(c,xs[i],ST.set))});return P}
@@ -299,6 +359,15 @@ function bindForm(){
    if(el.type==='checkbox'){el.checked=!!ST.set[k];el.onchange=()=>{ST.set[k]=el.checked;update()}}
    else{el.value=ST.set[k];el.onchange=()=>{ST.set[k]=+el.value||0;update()}}});
  document.querySelectorAll('[data-m]').forEach(el=>{el.value=ST.set.mat[el.dataset.m];el.onchange=()=>{ST.set.mat[el.dataset.m]=el.value;update()}});
+ $('#dlBrand').innerHTML=Object.keys(BRANDS).map(b=>`<option value="${b}">`).join('');
+ $('#dlSink').innerHTML=SINK_BRANDS.map(b=>`<option value="${b}">`).join('');
+ $('[data-b=finish]').innerHTML=FINISH.map(x=>`<option>${x}</option>`).join('');
+ const ser=()=>{$('#dlSeries').innerHTML=(BRANDS[ST.set.brand.name]||[]).map(x=>`<option value="${x}">`).join('')};ser();
+ document.querySelectorAll('[data-b]').forEach(el=>{const k=el.dataset.b;el.value=ST.set.brand[k]||'';
+   el.onchange=()=>{ST.set.brand[k]=el.value;
+     if(k==='name'){ser()}
+     if(k==='finish'){ST.set.mat.door=`${el.value} 도어 ${ST.set.td}T`;$('[data-m=door]').value=ST.set.mat.door}
+     update()}});
 }
 function renderCabs(){
  const F=[['type','종류'],['w','폭'],['h','높이'],['d','깊이'],['elev','설치높이'],['off','띄움'],['doors','문 개수'],['drawers','서랍 개수'],['shelves','선반 개수']];
@@ -306,16 +375,26 @@ function renderCabs(){
   <div class="hd"><span class="no">${i+1}</span><input value="${esc(c.name)}" data-k="name">
    <button class="btn mini" data-a="up" title="위로">▲</button><button class="btn mini" data-a="dn" title="아래로">▼</button>
    <button class="btn mini" data-a="cp">복사</button><button class="btn mini" data-a="rm">삭제</button></div>
-  <div class="grid">${F.map(([k,l])=>k==='type'
+  <div class="grid">${F.concat(c.gapH!==undefined?[['gapH',c.type==='냉장고장'?'냉장고 공간 높이':'후드 공간 높이']]:[],c.cutW!==undefined?[['cutW','타공 가로'],['cutD','타공 세로']]:[]).map(([k,l])=>k==='type'
    ?`<label class="f">${l}<select data-k="type">${Object.keys(TYPES).map(t=>`<option${t===c.type?' selected':''}>${t}</option>`).join('')}</select></label>`
    :`<label class="f">${l}<input type="number" data-k="${k}" value="${c[k]}"></label>`).join('')}</div>
+  ${c.sinkW!==undefined?`<div class="grid" style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)">
+   <label class="f">씽크볼 브랜드<input list="dlSink" data-k="sinkBrand" data-str="1" value="${esc(c.sinkBrand||'')}"></label>
+   <label class="f">모델명<input data-k="sinkModel" data-str="1" value="${esc(c.sinkModel||'')}" placeholder="카탈로그 모델명"></label>
+   <label class="f">볼 형태<select data-k="sinkType" data-str="1">${SINK_TYPES.map(x=>`<option${x===c.sinkType?' selected':''}>${x}</option>`).join('')}</select></label>
+   <label class="f">설치 방식<select data-k="sinkMount" data-str="1">${SINK_MOUNT.map(x=>`<option${x===c.sinkMount?' selected':''}>${x}</option>`).join('')}</select></label>
+   <label class="f">볼 가로<input type="number" data-k="sinkW" value="${c.sinkW}"></label>
+   <label class="f">볼 세로<input type="number" data-k="sinkD" value="${c.sinkD}"></label>
+   <label class="f">일반 규격 예시<select data-k="sinkPreset" data-str="1"><option value="">골라서 넣기</option>${SINK_SIZES.map(x=>`<option>${x}</option>`).join('')}</select></label>
+  </div>`:''}
   <label class="chk" style="margin-top:6px"><input type="checkbox" data-k="kick"${c.kick?' checked':''}> 걸레받이</label>
+  ${cabNote(c)?`<div class="hint" style="margin-top:4px;color:#8A6A3A">${esc(cabNote(c))}</div>`:''}
  </div>`).join('');
  $('#cabCount').textContent=`(${ST.cabs.length}개)`;
  $('#cabs').querySelectorAll('.cab').forEach(div=>{const i=+div.dataset.i,c=ST.cabs[i];
   div.querySelectorAll('[data-k]').forEach(el=>{el.onchange=()=>{const k=el.dataset.k;
-    if(k==='type'){const keep={id:c.id,name:c.name,off:c.off};Object.assign(c,JSON.parse(JSON.stringify(TYPES[el.value])),keep,{type:el.value});renderCabs()}
-    else if(k==='kick')c.kick=el.checked;else if(k==='name')c.name=el.value;else c[k]=+el.value||0;update()}});
+    if(k==='type'){const keep={id:c.id,name:c.name,off:c.off};EXTRA.forEach(e=>delete c[e]);Object.assign(c,JSON.parse(JSON.stringify(TYPES[el.value])),keep,{type:el.value});renderCabs()}
+    else if(k==='sinkPreset'){if(el.value){const [a,b]=el.value.split('×');c.sinkW=+a;c.sinkD=+b;renderCabs()}}else if(k==='kick')c.kick=el.checked;else if(k==='name'||el.dataset.str)c[k]=el.value;else c[k]=+el.value||0;if(k!=='name'&&k!=='type'){const h=div.querySelector('.hint');if(h)h.textContent=cabNote(c)}update()}});
   div.querySelectorAll('[data-a]').forEach(b=>{b.onclick=()=>{const a=b.dataset.a;
     if(a==='rm'){if(!confirm(`"${c.name}"을(를) 삭제할까요?`))return;ST.cabs.splice(i,1)}
     if(a==='cp')ST.cabs.splice(i+1,0,Object.assign(JSON.parse(JSON.stringify(c)),{id:uid(),name:c.name+' 복사'}));
@@ -339,7 +418,7 @@ function groupList(P){
 }
 function update(){
  persist();
- CUR.P=allParts();CUR.N=nestAll(CUR.P);CUR.rows=groupList(CUR.P);
+ CUR.all=allParts();CUR.P=CUR.all.filter(p=>!p.app);CUR.N=nestAll(CUR.P);CUR.rows=groupList(CUR.P);
  const sheets=Object.values(CUR.N).reduce((a,n)=>a+n.sheets.length,0);
  const edge=CUR.P.reduce((a,p)=>a+edgeLen(p),0)/1000;
  const over=Object.values(CUR.N).reduce((a,n)=>a.concat(n.over),[]);
@@ -347,10 +426,10 @@ function update(){
    .map(([a,b])=>`<div class="stat"><b>${b}</b><span>${a}</span></div>`).join('')
    +Object.values(CUR.N).map(n=>`<div class="stat"><b>${n.sheets.length}장</b><span>${esc(matName(n.mat))} ${n.T}T</span></div>`).join('');
  // 부재 리스트
- let h='<table><thead><tr><th>No</th><th>부재명</th><th>자재</th><th class="n">길이</th><th class="n">폭</th><th class="n">두께</th><th class="n">수량</th><th>엣지</th><th class="n">엣지(m)</th><th>결</th></tr></thead><tbody>';
+ let h='<table><thead><tr><th>No</th><th>부재명</th><th>자재</th><th class="n">길이</th><th class="n">폭</th><th class="n">두께</th><th class="n">수량</th><th>엣지</th><th class="n">엣지(m)</th><th>결</th><th>비고</th></tr></thead><tbody>';
  let no=0,last='';
- CUR.rows.forEach(r=>{if(r.cabId!==last){last=r.cabId;h+=`<tr class="grp"><td colspan="10">${esc(r.cab)}</td></tr>`}
-  h+=`<tr><td>${++no}</td><td>${esc(r.name)}</td><td>${esc(matName(r.mat))}</td><td class="n">${r.L}</td><td class="n">${r.W}</td><td class="n">${r.T}</td><td class="n">${r.q}</td><td>${edgeTxt(r)}</td><td class="n">${(edgeLen(r)*r.q/1000).toFixed(2)}</td><td>${r.grain&&ST.set.grain?'고정':'-'}</td></tr>`});
+ CUR.rows.forEach(r=>{if(r.cabId!==last){last=r.cabId;h+=`<tr class="grp"><td colspan="11">${esc(r.cab)}</td></tr>`}
+  h+=`<tr><td>${++no}</td><td>${esc(r.name)}</td><td>${esc(matName(r.mat))}</td><td class="n">${r.L}</td><td class="n">${r.W}</td><td class="n">${r.T}</td><td class="n">${r.q}</td><td>${edgeTxt(r)}</td><td class="n">${(edgeLen(r)*r.q/1000).toFixed(2)}</td><td>${r.grain&&ST.set.grain?'고정':'-'}</td><td>${esc(r.note||'')}</td></tr>`});
  h+='</tbody></table>';
  $('#listTbl').innerHTML=h;
  // 재단도
@@ -422,7 +501,7 @@ function render3D(cv,P,V,hideDoor){
  const tot=layout().reduce((a,x,i)=>Math.max(a,x+(+ST.cabs[i].w)),0);
  ctx.fillStyle='#6B655C';ctx.font='12px sans-serif';ctx.fillText(`전체 길이 ${tot} mm`,12,h-12);
 }
-function draw3D(){const cv=$('#cv');if(!cv||cv.offsetParent===null)return;render3D(cv,CUR.P,VIEW,$('#hideDoor').checked)}
+function draw3D(){const cv=$('#cv');if(!cv||cv.offsetParent===null)return;render3D(cv,CUR.all,VIEW,$('#hideDoor').checked)}
 (function(){const cv=$('#cv');let drag=null;
  cv.addEventListener('contextmenu',e=>e.preventDefault());
  cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,pan:e.shiftKey||e.button===2};cv.setPointerCapture(e.pointerId)});
@@ -437,7 +516,7 @@ function draw3D(){const cv=$('#cv');if(!cv||cv.offsetParent===null)return;render
 function fname(ext){return `더빌드탑_${(ST.project.name||'가구').replace(/[\\/:*?"<>|\s]+/g,'_')}_${ST.project.date||today()}.${ext}`}
 function dl(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
 function saveProject(){dl(fname('json'),new Blob([JSON.stringify(ST,null,1)],{type:'application/json'}))}
-function loadProject(inp){const f=inp.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!d.cabs)throw 0;ST=d;bindForm();renderCabs();update()}catch(e){alert('프로젝트 파일을 읽지 못했습니다.')}});inp.value=''}
+function loadProject(inp){const f=inp.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!d.cabs)throw 0;ST=d;normalize();bindForm();renderCabs();update()}catch(e){alert('프로젝트 파일을 읽지 못했습니다.')}});inp.value=''}
 function newProject(){if(!confirm('지금 내용을 지우고 샘플로 새로 시작할까요? (먼저 "프로젝트 저장"을 권합니다)'))return;ST=defaults();bindForm();renderCabs();update()}
 
 /* --- XLSX (압축 없는 zip) --- */
@@ -463,8 +542,8 @@ function sheetXML(rows,widths){
 function exportXLSX(){dl(fname('xlsx'),xlsxBlob())}
 function xlsxBlob(){
  const S=ST.set,pj=ST.project;
- const s1=[['No','가구','부재명','자재','길이(mm)','폭(mm)','두께(mm)','수량','엣지','엣지길이(m)','결 고정']];
- CUR.rows.forEach((r,i)=>s1.push([i+1,r.cab,r.name,matName(r.mat),r.L,r.W,r.T,r.q,edgeTxt(r),+(edgeLen(r)*r.q/1000).toFixed(2),r.grain&&S.grain?'고정':'']));
+ const s1=[['No','가구','부재명','자재','길이(mm)','폭(mm)','두께(mm)','수량','엣지','엣지길이(m)','결 고정','비고']];
+ CUR.rows.forEach((r,i)=>s1.push([i+1,r.cab,r.name,matName(r.mat),r.L,r.W,r.T,r.q,edgeTxt(r),+(edgeLen(r)*r.q/1000).toFixed(2),r.grain&&S.grain?'고정':'',r.note||'']));
  const s2=[['자재','두께(mm)','원장 크기','필요 원장(장)','부재 수','평균 사용률(%)']];
  Object.values(CUR.N).forEach(g=>{const n=g.sheets.length;s2.push([matName(g.mat),g.T,`${S.sheetL}×${S.sheetW}`,n,g.sheets.reduce((a,s)=>a+s.placed.length,0),n?+(g.sheets.reduce((a,s)=>a+s.use,0)/n*100).toFixed(1):0])});
  s2.push([]);s2.push(['엣지(테두리) 합계(m)','','','',+(CUR.P.reduce((a,p)=>a+edgeLen(p),0)/1000).toFixed(2)]);
@@ -472,10 +551,10 @@ function xlsxBlob(){
  const s3=[['자재','두께','원장 번호','가구','부재명','X(mm)','Y(mm)','가로(mm)','세로(mm)','회전']];
  Object.values(CUR.N).forEach(g=>g.sheets.forEach((sh,i)=>sh.placed.forEach(q=>s3.push([matName(g.mat),g.T,i+1,q.p.cab,q.p.name,q.x,q.y,q.w,q.h,q.r?'회전':'']))));
  const xs=layout();
- const s4=[['No','가구명','종류','폭','높이','깊이','설치높이','배치 X','문','서랍','선반','걸레받이']];
- ST.cabs.forEach((c,i)=>s4.push([i+1,c.name,c.type,+c.w,+c.h,+c.d,+c.elev,xs[i],+c.doors,+c.drawers,+c.shelves,c.kick?'있음':'']));
- s4.push([]);s4.push(['현장명',pj.name]);s4.push(['고객명',pj.client]);s4.push(['작성일',pj.date]);s4.push(['메모',pj.memo]);s4.push(['작성','더빌드탑 · 상담 010-5467-9349']);
- const SH=[['부재리스트',s1,[6,14,14,18,10,10,9,7,12,11,8]],['원장요약',s2,[22,9,14,13,9,14]],['재단좌표',s3,[18,7,9,14,14,9,9,10,10,7]],['가구목록',s4,[6,14,10,8,8,8,10,9,6,6,6,9]]];
+ const s4=[['No','가구명','종류','폭','높이','깊이','설치높이','배치 X','문','서랍','선반','걸레받이','가공 메모']];
+ ST.cabs.forEach((c,i)=>s4.push([i+1,c.name,c.type,+c.w,+c.h,+c.d,+c.elev,xs[i],+c.doors,+c.drawers,+c.shelves,c.kick?'있음':'',cabNote(c)]));
+ s4.push([]);s4.push(['주방 브랜드',brandTxt()]);s4.push(['현장명',pj.name]);s4.push(['고객명',pj.client]);s4.push(['작성일',pj.date]);s4.push(['메모',pj.memo]);s4.push(['작성','더빌드탑 · 상담 010-5467-9349']);
+ const SH=[['부재리스트',s1,[6,14,16,18,10,10,9,7,12,11,8,22]],['원장요약',s2,[22,9,14,13,9,14]],['재단좌표',s3,[18,7,9,14,14,9,9,10,10,7]],['가구목록',s4,[6,16,12,8,8,8,10,9,6,6,6,9,60]]];
  const files=[
   ['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+SH.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')+'</Types>'],
   ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
@@ -490,10 +569,10 @@ function xlsxBlob(){
 /* --- 스케치업용 COLLADA (.dae) --- */
 function exportDAE(){dl(fname('dae'),daeBlob())}
 function daeBlob(){
- const mats={body:'몸통',door:'문',back:'뒷판',box:'서랍',kick:'걸레받이'};
+ const mats={body:'몸통',door:'문',back:'뒷판',box:'서랍',kick:'걸레받이',app:'가전_참고',appl:'가전_참고_스테인리스',sink:'씽크볼_참고'};
  const rgb=h=>{const n=parseInt(h.slice(1),16);return [(n>>16)/255,((n>>8)&255)/255,(n&255)/255].map(v=>v.toFixed(3)).join(' ')};
  let geo='',nodes='';
- CUR.P.forEach((p,i)=>{const b=p.box;
+ CUR.all.forEach((p,i)=>{const b=p.box;
   const V=[];for(let k=0;k<8;k++)V.push(b[k&1?3:0],b[k&2?4:1],b[k&4?5:2]);
   const T=[0,2,3,0,3,1, 4,5,7,4,7,6, 0,1,5,0,5,4, 2,6,7,2,7,3, 0,4,6,0,6,2, 1,3,7,1,7,5];
   geo+=`<geometry id="g${i}"><mesh><source id="g${i}p"><float_array id="g${i}pa" count="24">${V.map(v=>+v.toFixed(2)).join(' ')}</float_array><technique_common><accessor source="#g${i}pa" count="8" stride="3"><param name="X" type="float"/><param name="Y" type="float"/><param name="Z" type="float"/></accessor></technique_common></source><vertices id="g${i}v"><input semantic="POSITION" source="#g${i}p"/></vertices><triangles count="12" material="m"><input semantic="VERTEX" source="#g${i}v" offset="0"/><p>${T.join(' ')}</p></triangles></mesh></geometry>`;
@@ -546,18 +625,23 @@ function pgTable(pages,title,right,cols,rows,startPage,startY,rowH){
 function buildPdfPages(){
  const pages=[],S=ST.set;
  const p1=pgNew('1. 가구 구성 · 3D',`가구 ${ST.cabs.length}개 · 부재 ${CUR.P.length}개`);pages.push(p1);
- const off=document.createElement('canvas');off.width=PW-2*PM;off.height=560;
- render3D(off,CUR.P,{yaw:-0.6,pitch:0.42,zoom:1.25,px:0,py:0},false);
+ const off=document.createElement('canvas');off.width=PW-2*PM;off.height=520;
+ render3D(off,CUR.all,{yaw:-0.6,pitch:0.42,zoom:1.25,px:0,py:0},false);
  p1.x.drawImage(off,PM,PTOP);
  const nest=Object.values(CUR.N).map(g=>`${matName(g.mat)} ${g.T}T ${g.sheets.length}장(${g.sheets.length?(g.sheets.reduce((a,s)=>a+s.use,0)/g.sheets.length*100).toFixed(0):0}%)`).join('   ·   ');
  p1.x.font='bold 21px sans-serif';p1.x.fillStyle='#1F1E1C';
+ p1.x.fillText(`주방: ${brandTxt()}`,PM,PTOP+552);
  p1.x.fillText(`원장: ${nest}   ·   엣지 합계 ${(CUR.P.reduce((a,p)=>a+edgeLen(p),0)/1000).toFixed(1)} m`,PM,PTOP+585);
  const cc=[{t:'No',w:5},{t:'가구명',w:18},{t:'종류',w:12},{t:'폭',w:8,r:1},{t:'높이',w:8,r:1},{t:'깊이',w:8,r:1},{t:'설치높이',w:10,r:1},{t:'문',w:6,r:1},{t:'서랍',w:6,r:1},{t:'선반',w:6,r:1},{t:'걸레받이',w:9}];
- pgTable(pages,'1. 가구 구성 · 3D','',cc,ST.cabs.map((c,i)=>[i+1,c.name,c.type,c.w,c.h,c.d,c.elev,c.doors,c.drawers,c.shelves,c.kick?'있음':'-']),p1,PTOP+615,30);
- const lc=[{t:'No',w:5},{t:'부재명',w:16},{t:'자재',w:20},{t:'길이',w:8,r:1},{t:'폭',w:8,r:1},{t:'두께',w:7,r:1},{t:'수량',w:7,r:1},{t:'엣지',w:11},{t:'엣지(m)',w:9,r:1},{t:'결',w:6}];
+ let tr=pgTable(pages,'1. 가구 구성 · 3D','',cc,ST.cabs.map((c,i)=>[i+1,c.name,c.type,c.w,c.h,c.d,c.elev,c.doors,c.drawers,c.shelves,c.kick?'있음':'-']),p1,PTOP+615,30);
+ const notes=ST.cabs.filter(c=>cabNote(c)).map(c=>`· ${c.name}: ${cabNote(c)}`);
+ if(notes.length){let pg=tr.pg,y=tr.y+16;
+  notes.forEach(n=>{if(y+30>PH-PM){pg=pgNew('1. 가구 구성 · 가공 메모','');pages.push(pg);y=PTOP}
+   pg.x.fillStyle='#8A6A3A';pg.x.font='19px sans-serif';pg.x.textAlign='left';pg.x.fillText(n,PM,y+12);y+=30});}
+ const lc=[{t:'No',w:5},{t:'부재명',w:16},{t:'자재',w:20},{t:'길이',w:8,r:1},{t:'폭',w:8,r:1},{t:'두께',w:7,r:1},{t:'수량',w:7,r:1},{t:'엣지',w:11},{t:'엣지(m)',w:8,r:1},{t:'결',w:5},{t:'비고',w:14}];
  const rows=[];let last='',no=0;
  CUR.rows.forEach(r=>{if(r.cabId!==last){last=r.cabId;rows.push({grp:r.cab})}
-  rows.push([++no,r.name,matName(r.mat),r.L,r.W,r.T,r.q,edgeTxt(r),(edgeLen(r)*r.q/1000).toFixed(2),r.grain&&S.grain?'고정':'-'])});
+  rows.push([++no,r.name,matName(r.mat),r.L,r.W,r.T,r.q,edgeTxt(r),(edgeLen(r)*r.q/1000).toFixed(2),r.grain&&S.grain?'고정':'-',r.note||''])});
  pgTable(pages,'2. 부재 리스트',`몸통 ${S.tb}T · 문 ${S.td}T · 뒷판 ${S.tk}T`,lc,rows,null,0,30);
  Object.values(CUR.N).forEach(g=>g.sheets.forEach((sh,i)=>{
   const p=pgNew(`3. 원장 재단도 — ${matName(g.mat)} ${g.T}T (${i+1}/${g.sheets.length})`,`${S.sheetL}×${S.sheetW} · 톱날 ${S.kerf} · 사용률 ${(sh.use*100).toFixed(0)}%`);pages.push(p);
@@ -620,14 +704,15 @@ async function shareKakao(){
 function buildPrint(){
  const pj=ST.project,S=ST.set;
  const off=document.createElement('canvas');off.width=1500;off.height=820;
- render3D(off,CUR.P,{yaw:-0.6,pitch:0.42,zoom:1,px:0,py:0},false);
+ render3D(off,CUR.all,{yaw:-0.6,pitch:0.42,zoom:1,px:0,py:0},false);
  const img=off.toDataURL('image/png');
- const tb=`<div class="tb"><b>더빌드탑 가구 설계</b><span>현장: ${esc(pj.name)}${pj.client?' · 고객: '+esc(pj.client):''}</span><span>작성일 ${esc(pj.date)}</span><span>상담 010-5467-9349</span></div>`;
+ const tb=`<div class="tb"><b>더빌드탑 가구 설계</b><span>${esc(brandTxt())}</span><span>현장: ${esc(pj.name)}${pj.client?' · 고객: '+esc(pj.client):''}</span><span>작성일 ${esc(pj.date)}</span><span>상담 010-5467-9349</span></div>`;
  const xs=layout();
  let h=`<div class="pg">${tb}<h2><span>1. 가구 구성 · 3D</span><span>가구 ${ST.cabs.length}개 · 부재 ${CUR.P.length}개</span></h2>
   <img src="${img}" style="width:100%;max-height:115mm;object-fit:contain">
   <table><thead><tr><th>No</th><th>가구명</th><th>종류</th><th class="n">폭</th><th class="n">높이</th><th class="n">깊이</th><th class="n">설치높이</th><th class="n">문</th><th class="n">서랍</th><th class="n">선반</th></tr></thead><tbody>
   ${ST.cabs.map((c,i)=>`<tr><td>${i+1}</td><td>${esc(c.name)}</td><td>${c.type}</td><td class="n">${c.w}</td><td class="n">${c.h}</td><td class="n">${c.d}</td><td class="n">${c.elev}</td><td class="n">${c.doors}</td><td class="n">${c.drawers}</td><td class="n">${c.shelves}</td></tr>`).join('')}</tbody></table>
+  ${ST.cabs.filter(c=>cabNote(c)).map(c=>`<p style="margin:2px 0;color:#8A6A3A">· ${esc(c.name)}: ${esc(cabNote(c))}</p>`).join('')}
   ${pj.memo?`<p>메모: ${esc(pj.memo)}</p>`:''}</div>`;
  h+=`<div class="pg">${tb}<h2><span>2. 부재 리스트</span><span>몸통 ${S.tb}T · 문 ${S.td}T · 뒷판 ${S.tk}T</span></h2>${$('#listTbl').innerHTML}
   <h2 style="margin-top:10px"><span>원장 요약</span><span></span></h2><table><thead><tr><th>자재</th><th class="n">두께</th><th class="n">원장(장)</th><th class="n">평균 사용률</th></tr></thead><tbody>
@@ -640,7 +725,7 @@ function buildPrint(){
 function doPrint(){buildPrint();setTimeout(()=>window.print(),300)}
 window.addEventListener('beforeprint',()=>{if(!$('#print').innerHTML)buildPrint()});
 
-bindForm();renderCabs();update();
+normalize();bindForm();renderCabs();update();
 </script>
 </body>
 </html>
